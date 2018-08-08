@@ -8,8 +8,6 @@
 -- Version de PHP :  7.2.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
-
 --
 -- Base de données :  `myDatabase`
 --
@@ -20,17 +18,9 @@ SET time_zone = "+00:00";
 -- Structure de la table `article`
 --
 
-CREATE TABLE `article` (
+CREATE TABLE article (
   `id` int(11) NOT NULL,
-  `auteur` varchar(255) DEFAULT NULL,
-  `lien` varchar(255) DEFAULT NULL,
-  `date` varchar(255) DEFAULT NULL,
-  `texte` text NOT NULL,
-  `accueil` tinyint(1) NOT NULL DEFAULT '0',
-  `titre` varchar(255) NOT NULL,
-  `type` varchar(255) DEFAULT NULL,
-  `sous_titre` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+);
 
 --
 -- Déchargement des données de la table `article`
