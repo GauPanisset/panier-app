@@ -1,6 +1,8 @@
 const mysql = require('mysql');
+const Fs = require('fs');
+const Path = require('path');
 
-const url = process.env.CLEARDB_DATABASE_URL;
+const url = "mysql://bba43b57d25079:712ed0dc@us-cdbr-iron-east-01.cleardb.net/heroku_526969b9ba26bf4?reconnect=true";//process.env.CLEARDB_DATABASE_URL;
                                                 //mysql://user:password@host/database
 let config;
 
@@ -24,10 +26,16 @@ if (url !== undefined) {
 
 const data = mysql.createConnection(config);
 
+
+
 data.connect((err) => {
     if (err) {
         throw err;
     }
 });
+
+const init = Fs.readFileSync(Path.join(process.cwd(), './database/init.sql'), 'utf-8');
+
+data.exec(init);
 
 module.exports = data;

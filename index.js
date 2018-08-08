@@ -1,7 +1,6 @@
 const Express = require('express');
 const BP = require('body-parser');
-const serveStatic = require('serve-static');
-
+const HTTP = require('http');
 
 const app = Express();
 
@@ -19,7 +18,9 @@ app.use('/brand', require('./routes/brand.js').router);
 app.use('/shop', require('./routes/shop.js').router);
 app.use('/filter', require('./routes/filter.js').router);
 
-app.use(serveStatic(__dirname + "/dist"));
+setInterval(function() {
+    HTTP.get("http://panier-app.herokuapp.com");
+}, 300000);
 
 app.listen(3031, (err) => {
 
