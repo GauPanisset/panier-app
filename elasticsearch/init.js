@@ -2,11 +2,24 @@ const elasticsearch = require('elasticsearch');
 const DB = require('../database/init.js');
 const axios = require('axios');
 
-const esClient = new elasticsearch.Client({
-    //Initialise le client Elasticsearch.
-    host: 'localhost:9200',
-    log: 'error'
-});
+const url = process.env.BONZAI_URL;
+
+let config;
+
+if (url !== undefined) {
+    config = {
+        host: url.substring(url.indexOf("@"), url.length),
+        log: 'error'
+    }
+} else {
+    config = {
+        //Initialise le client Elasticsearch.
+        host: 'localhost:9200',
+            log: 'error'
+    }
+}
+
+const esClient = new elasticsearch.Client(config);
 
 function indexDoc(index, type, data) {
     data.forEach(item => {
