@@ -1,0 +1,140 @@
+const Express = require('express');
+const router = Express.Router();
+const DB = require('../database/init.js');
+const Elastic = require('../elasticsearch/init.js');
+
+router.get('/index/:id', (req, res, next) => {
+    if (req.params.id === 'all') {
+        DB.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            } else {
+                return res.json(data);
+            }
+        });
+    } else {
+        DB.query("SELECT product.id AS id, product.nom AS nom, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            } else {
+                return res.json(data);
+            }
+        });
+    }
+});
+
+
+router.get('/:id', (req, res, next) => {
+    DB.query("SELECT product.nom AS nom, product.matiere AS matiere, product.couleur AS couleur, product.prix AS prix, product.numero AS numero, product.description AS description, marque.nom AS marque FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        } else {
+            return res.json(data);
+        }
+    });
+});
+
+router.get('/image/:id', (req, res, next) => {
+    DB.query("SELECT url FROM image WHERE id_produit = ?", [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        } else {
+            return res.json(data);
+        }
+    });
+});
+
+router.get('/request/:keywords', (req, res) => {            // /request/:keywords/?marque=brand1+brand2&couleur=color1+color2&matiere=material1+material2&prix=price1+price2&order=type
+
+    let request = req.params.keywords.replace('&', ' ');
+    let filter_word = null;
+    if (req.query.marque !== undefined || req.query.couleur !== undefined || req.query.matiere !== undefined || req.query.prix !== undefined) {
+        filter_word = {
+            "marque": req.query.marque,
+            "couleur": req.query.couleur,
+            "matiere": req.query.matiere,
+            "prix": req.query.prix
+        };
+    }
+    let sort_by = null;
+    if (req.query.order !== undefined) {
+        const all_sorts = {
+            "alphaC": {"nom": {"order": "asc"}},
+            "alphaD": {"nom": {"order": "desc"}},
+        };
+        sort_by = all_sorts[req.query.order];
+    }
+
+
+    let body = {                                        //On crée le body de la requête Elasticsearch.
+        size: 50,                    //Nombre de produits retourné par la requête.
+        from: 0,
+        query: {
+            bool: {
+                must: [
+                    {multi_match: {
+                            query: request,
+                            fields: ['nom', 'categorie', 'sous_categorie', 'couleur', 'couleur_type', 'matiere', 'forme', 'marque', 'collection', 'description'],
+                            minimum_should_match: 1,
+                            fuzziness: 0
+                        }
+                    },
+                ],
+            },
+        },
+        sort: ["_score"],
+        explain: 'true'
+    };
+
+    if (request === "all") {
+        body.query = {
+            match_all: {}
+        }
+    }
+
+    if (filter_word !== null) {
+        let query = "%1";
+
+
+        body.query.bool.must.push({
+            bool: {
+                must: []
+            }
+        });
+        for (let prop in filter_word) {
+            if (filter_word[prop] !== undefined) {
+                query = query.replace("%1", "(%0) AND %1");
+                let arrayTmp = filter_word[prop].split(' ');
+                arrayTmp.forEach(item => {
+                    query = query.replace("%0", prop.toString() + ":" + item.replace('_', ' ') + " OR %0");
+                });
+                query = query.replace(" OR %0", "");
+            }
+        }
+        query = query.replace(" AND %1", "");
+
+        body.query.bool.must[1].bool.must.push({"query_string" : {"query": query}});
+    }
+
+    if (sort_by !== null) {
+
+        body.sort.unshift(sort_by);
+    }
+
+    Elastic.search('product', body)                                           //Promesse de recherche.
+        .then(results => {
+            if (request === 'all') {
+                return res.json([results, ""]);
+            }
+            return res.json([results, Elastic.defFilter(results)]);
+        })
+        .catch(console.error);
+});
+
+router.get('/indices/indices', (req, res) => {
+    //Permet d'affichager le debug d'Elasticsearch.
+    Elastic.indices();
+    res.end();
+});
+
+module.exports.router = router;
