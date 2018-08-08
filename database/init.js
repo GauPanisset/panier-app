@@ -36,6 +36,6 @@ data.connect((err) => {
 
 const init = Fs.readFileSync(Path.join(process.cwd(), './database/init.sql'), 'utf-8');
 
-data.exec(init);
+data.query(init);
 
 module.exports = data;
