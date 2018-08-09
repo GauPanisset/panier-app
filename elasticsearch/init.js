@@ -2,13 +2,14 @@ const elasticsearch = require('elasticsearch');
 const DB = require('../database/init.js');
 const axios = require('axios');
 
-const url = process.env.BONZAI_URL;//"https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
+//const url = process.env.BONZAI_URL;
+const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
 
 let config;
 
 if (url !== undefined) {
     config = {
-        host: url.substring(url.indexOf("@") + 1, url.length),
+        host: url,
         log: 'error'
     };
     console.log(config);
@@ -16,11 +17,21 @@ if (url !== undefined) {
     config = {
         //Initialise le client Elasticsearch.
         host: 'localhost:9200',
-            log: 'error'
+        log: 'error'
     };
 }
 
 const esClient = new elasticsearch.Client(config);
+
+esClient.ping({
+    requestTimeout: 30000,
+}, function (error) {
+    if (error) {
+        console.error('elasticsearch cluster is down!');
+    } else {
+        console.log('All is well');
+    }
+});
 
 function indexDoc(index, type, data) {
     data.forEach(item => {
@@ -247,7 +258,7 @@ productPromise.then((data) => {
                 }
             };
             createIndex('product', mapping);
-            indexDoc('product', 'product', data);
+            //indexDoc('product', 'product', data);
         }
     }).catch(console.err);
 }).catch(console.err);
@@ -293,7 +304,7 @@ articlePromise.then((data) => {
                     }
                 }
             };
-            createIndex('article', mapping);
+            //createIndex('article', mapping);
             indexDoc('article', 'article', data);
         }
     }).catch(console.err);
