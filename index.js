@@ -30,6 +30,6 @@ app.listen(PORT, (err) => {
         console.log(err);
     }
     else {
-        console.log('app listening on port' + PORT);
+        console.log('app listening on port ' + PORT);
     }
 });
