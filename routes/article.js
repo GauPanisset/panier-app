@@ -3,8 +3,9 @@ const router = Express.Router();
 const DB = require('../database/init.js');
 const Elastic = require('../elasticsearch/init.js');
 
-router.get('/accueil/reportage', (req, res, next) => {
-    DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = 'reportage'", (err, data) => {
+
+router.get('/accueil/:type', (req, res, next) => {
+    DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = ?", [req.params.type], (err, data) => {
         if (err) {
             return next(err);
         } else {
@@ -13,68 +14,22 @@ router.get('/accueil/reportage', (req, res, next) => {
     });
 });
 
-router.get('/section/reportage', (req, res, next) => {
-    DB.query("SELECT article.id AS id, image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = 'reportage'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
+router.get('/section/:type', (req, res, next) => {
 
-router.get('/accueil/news', (req, res, next) => {
-    DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = 'news'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
+    let sort_by = "ORDER BY ";
+    if (req.query.order !== undefined) {
+        const all_sorts = {
+            "alphaC": "article.titre ASC",
+            "alphaD": "article.titre DESC",
+            "dateC": "article.date ASC",
+            "dateD": "article.date DESC",
+        };
+        sort_by += all_sorts[req.query.order];
+    } else {
+        sort_by += "''";
+    }
 
-router.get('/section/news', (req, res, next) => {
-    DB.query("SELECT article.id AS id, image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = 'news'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
-
-router.get('/accueil/dossier', (req, res, next) => {
-    DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = 'dossier'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
-
-router.get('/section/dossier', (req, res, next) => {
-    DB.query("SELECT article.id AS id, image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = 'dossier'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
-
-router.get('/accueil/maison', (req, res, next) => {
-    DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = 'maison'", (err, data) => {
-        if (err) {
-            return next(err);
-        } else {
-            return res.json(data);
-        }
-    });
-});
-
-router.get('/section/maison', (req, res, next) => {
-    DB.query("SELECT article.id AS id, image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = 'maison'", (err, data) => {
+    DB.query("SELECT article.id AS id, article.date AS date,  image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = ? " + sort_by, [req.params.type], (err, data) => {
         if (err) {
             return next(err);
         } else {
@@ -108,18 +63,6 @@ router.get('/request/:keywords', (req, res) => {
 
     let request = req.params.keywords.replace('&', ' ');
     let filter_word = null;
-
-    let sort_by = null;
-    if (req.query.order !== undefined) {
-        const all_sorts = {
-            "alphaC": {"titre": {"order": "asc"}},
-            "alphaD": {"titre": {"order": "desc"}},
-            "dateC": { "date" : {"order" : "asc"}},
-            "dateD": { "date" : {"order" : "desc"}},
-        };
-        sort_by = all_sorts[req.query.order];
-    }
-
 
     let body = {                                        //On crée le body de la requête Elasticsearch.
         size: 50,                    //Nombre de produits retourné par la requête.
@@ -170,11 +113,23 @@ router.get('/request/:keywords', (req, res) => {
         body.query.bool.must[1].bool.must.push({"query_string" : {"query": query}});
     }
 
-    if (sort_by !== null) {
+    if (req.query.order !== undefined) {
+        const all_sorts = {
+            "alphaC": {"titre": {"order": "asc"}},
+            "alphaD": {"titre": {"order": "desc"}},
+            "dateC": { "date" : {"order" : "asc"}},
+            "dateD": { "date" : {"order" : "desc"}},
+        };
 
-        body.sort.unshift(sort_by);
+        req.query.order.split(' ').forEach(item => {
+            if (all_sorts[item] !== null) {
+                body.sort.unshift(all_sorts[item])
+            }
+        });
     }
 
+    console.log(body);
+    console.log(body.sort);
     Elastic.search('article', body)                                           //Promesse de recherche.
         .then(results => {
             if (request === 'all') {

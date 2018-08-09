@@ -2,7 +2,7 @@ const mysql = require('mysql');
 const Fs = require('fs');
 const Path = require('path');
 
-const url = "mysql://bba43b57d25079:712ed0dc@us-cdbr-iron-east-01.cleardb.net/heroku_526969b9ba26bf4?reconnect=true";//process.env.CLEARDB_DATABASE_URL;
+const url = process.env.CLEARDB_DATABASE_URL; //"mysql://bba43b57d25079:712ed0dc@us-cdbr-iron-east-01.cleardb.net/heroku_526969b9ba26bf4?reconnect=true";
                                                 //mysql://user:password@host/database
 let config;
 
@@ -34,8 +34,11 @@ data.connect((err) => {
     }
 });
 
-const init = Fs.readFileSync(Path.join(process.cwd(), './database/init.sql'), 'utf-8');
+if (url !== undefined) {
 
-data.query(init);
+    const init = Fs.readFileSync(Path.join(process.cwd(), './database/init.sql'), 'utf-8');
+
+    data.query(init);
+}
 
 module.exports = data;

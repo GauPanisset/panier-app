@@ -56,15 +56,6 @@ router.get('/request/:keywords', (req, res) => {            // /request/:keyword
             "prix": req.query.prix
         };
     }
-    let sort_by = null;
-    if (req.query.order !== undefined) {
-        const all_sorts = {
-            "alphaC": {"nom": {"order": "asc"}},
-            "alphaD": {"nom": {"order": "desc"}},
-        };
-        sort_by = all_sorts[req.query.order];
-    }
-
 
     let body = {                                        //On crée le body de la requête Elasticsearch.
         size: 50,                    //Nombre de produits retourné par la requête.
@@ -116,9 +107,19 @@ router.get('/request/:keywords', (req, res) => {            // /request/:keyword
         body.query.bool.must[1].bool.must.push({"query_string" : {"query": query}});
     }
 
-    if (sort_by !== null) {
+    if (req.query.order !== undefined) {
+        const all_sorts = {
+            "alphaC": {"nom": {"order": "asc"}},
+            "alphaD": {"nom": {"order": "desc"}},
+            "dateC": null,
+            "dateD": null,
+        };
 
-        body.sort.unshift(sort_by);
+        req.query.order.split(' ').forEach(item => {
+            if (all_sorts[item] !== null) {
+                body.sort.unshift(all_sorts[item])
+            }
+        });
     }
 
     Elastic.search('product', body)                                           //Promesse de recherche.

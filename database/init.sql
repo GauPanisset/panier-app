@@ -1,30 +1,18 @@
--- phpMyAdmin SQL Dump
--- version 4.7.7
--- https://www.phpmyadmin.net/
---
--- Hôte : localhost:8889
--- Généré le :  mer. 08 août 2018 à 13:17
--- Version du serveur :  5.6.38
--- Version de PHP :  7.2.1
-
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
---
--- Base de données :  `myDatabase`
---
 
--- --------------------------------------------------------
 
---
--- Structure de la table `article`
---
-
-CREATE TABLE article (
+CREATE TABLE `article` (
   `id` int(11) NOT NULL,
-);
+  `auteur` varchar(255) DEFAULT NULL,
+  `lien` varchar(255) DEFAULT NULL,
+  `date` varchar(255) DEFAULT NULL,
+  `texte` text NOT NULL,
+  `accueil` tinyint(1) NOT NULL DEFAULT '0',
+  `titre` varchar(255) NOT NULL,
+  `type` varchar(255) DEFAULT NULL,
+  `sous_titre` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Déchargement des données de la table `article`
---
 
 INSERT INTO `article` (`id`, `auteur`, `lien`, `date`, `texte`, `accueil`, `titre`, `type`, `sous_titre`) VALUES
 (1, 'Solaine Hervé', 'allocrapo.fr', '23/09/2017', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis consequat ac tortor at mollis. Etiam eu libero eleifend, bibendum dui vel, pulvinar nunc. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Pellentesque lectus lacus, egestas sed malesuada ut, egestas et nisl. Aliquam viverra ut est eget lobortis. Duis sagittis ultricies pulvinar. Cras dictum arcu in augue finibus aliquet. Maecenas ut mi lacinia, accumsan diam quis, ullamcorper metus. Nunc egestas egestas eros, ac auctor mi efficitur nec. Aliquam tristique urna et ipsum posuere, eu posuere massa finibus. Mauris pellentesque arcu et maximus pulvinar. Suspendisse imperdiet at erat ac laoreet. Mauris ex est, interdum eu purus a, rutrum luctus lectus. Proin malesuada felis aliquam gravida vestibulum. Mauris pulvinar dapibus nisi a mattis.\r\n\r\nAenean nec libero vitae ante accumsan mattis. Aenean et massa vehicula, iaculis sapien vel, placerat metus. Fusce sagittis mauris ac viverra placerat. Nullam diam ante, faucibus vel erat et, ultricies convallis nisi. Praesent quam libero, eleifend eget tincidunt vel, mattis nec est. Duis sed turpis vehicula, scelerisque dui a, sagittis orci. Proin eu suscipit lorem. Maecenas pretium eget eros lacinia euismod. Nulla id ipsum enim. In sodales, eros sed mattis iaculis, magna nunc dignissim arcu, ut cursus tellus orci at lectus. Mauris eu euismod lorem. Donec ultrices egestas nulla. Duis ornare interdum neque. In hac habitasse platea dictumst. Proin laoreet sapien sed consectetur pretium. Nam commodo massa lacus, at iaculis eros volutpat vel.\r\n\r\nSed bibendum eu leo eu consectetur. Maecenas pellentesque vitae turpis a ornare. Proin pulvinar tempus augue, et mollis diam placerat at. Nam a lacinia tortor, et scelerisque ante. Ut tempor, arcu eget faucibus molestie, massa ipsum pretium urna, quis ullamcorper mauris ligula at elit. Donec nec nisl eros. Sed interdum id elit ut iaculis. Nulla leo enim, vehicula pellentesque orci ut, aliquet dignissim magna. Sed mattis non turpis nec egestas. Aliquam at turpis in metus dictum facilisis. Nunc lobortis tristique neque in iaculis. Aliquam iaculis malesuada metus, in commodo erat aliquam sit amet. Proin eget tellus massa. Nunc ultricies rutrum sapien et vehicula. Lorem ipsum dolor sit amet, consectetur adipiscing elit.\r\n\r\nCurabitur vel libero viverra, condimentum est eget, consectetur ipsum. Phasellus iaculis venenatis enim eu imperdiet. Integer vitae lacus sollicitudin, maximus est at, ullamcorper lorem. Etiam quam lacus, finibus nec est vitae, porta pharetra augue. Nullam congue nunc nec metus suscipit, sit amet egestas leo rutrum. Nunc sodales sem justo, ac malesuada nibh porttitor eget. Duis viverra ex egestas dolor porta, at rutrum nisl imperdiet. Ut eget dignissim libero. Mauris at sagittis diam, ut ullamcorper tellus. Proin iaculis gravida nibh. Pellentesque rutrum tellus eu augue tristique, a pretium felis molestie.\r\n\r\nSed augue lectus, accumsan vitae velit sed, dignissim lobortis odio. Nam euismod porta quam, at gravida quam. Mauris non tellus hendrerit, sodales nulla a, feugiat mi. Etiam tincidunt a ligula sit amet dignissim. Pellentesque a pretium eros. In at aliquam felis. Phasellus orci orci, aliquam sit amet faucibus a, aliquet in nisi.', 1, 'Titre article 1', 'news', 'Sous titre article 1'),
@@ -56,11 +44,6 @@ INSERT INTO `article` (`id`, `auteur`, `lien`, `date`, `texte`, `accueil`, `titr
 (26, 'Jessamine Des Meaux', 'mentalcafe.fr', '09/06/2018', 'In semper lacus leo, eu fermentum ligula efficitur nec. Nullam ornare dictum auctor. Nam in ipsum blandit, pharetra arcu et, pharetra lectus. Cras sagittis iaculis iaculis. Donec vel ullamcorper erat. Maecenas et est ac sapien euismod sagittis. Pellentesque id est vitae ex aliquam congue sit amet vel nisl. Nunc rutrum ligula suscipit, blandit sem eget, dapibus sapien. Ut fermentum nisi sed pellentesque facilisis. Maecenas condimentum quam et nulla mattis consectetur. Pellentesque porttitor ante ut libero dapibus, sit amet aliquam est aliquet. Nulla sed dolor eget dui accumsan ornare.\r\n\r\nNulla non libero sit amet magna bibendum aliquet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec facilisis magna eget sapien rutrum, id vehicula nisi interdum. Morbi ut lectus tellus. Suspendisse scelerisque, magna a dictum efficitur, enim nunc porta dolor, eu cursus leo turpis sit amet sem. Maecenas eget tincidunt sapien, ac tincidunt nisi. Fusce eleifend ultricies commodo. Vestibulum vestibulum sem quis neque facilisis, at congue erat varius. Duis eu arcu varius ante viverra efficitur ut tincidunt enim. Aliquam tortor nisi, vestibulum vitae orci eu, finibus tempus magna. In facilisis et mi in dictum.\r\n\r\nNam non tempor nisl, gravida hendrerit ante. Mauris quis feugiat lectus. In scelerisque sem quis erat tristique vestibulum. Vestibulum faucibus dictum porttitor. Donec erat libero, tincidunt a est convallis, cursus convallis quam. Suspendisse est mi, interdum ut rutrum vel, tincidunt sed neque. Sed ullamcorper pulvinar placerat. Maecenas bibendum luctus eros, id mattis nunc sollicitudin non. Donec porttitor finibus nisi sed consequat.\r\n\r\nSed arcu ipsum, euismod ut rutrum quis, pharetra non urna. Mauris vestibulum quam semper quam euismod, et pulvinar purus ultrices. Nam pulvinar, felis at malesuada dictum, leo ex rhoncus sem, vel sodales sapien nisl id purus. Duis mattis purus nisi, a efficitur nibh gravida id. Nunc imperdiet, nisl et facilisis pulvinar, leo velit facilisis risus, ac malesuada purus massa a tortor. Nullam nec ullamcorper magna. Nunc ut iaculis velit. Nam ut vestibulum orci. Mauris commodo ut diam nec consequat. Integer mi quam, lobortis quis gravida eget, auctor sit amet augue. Praesent porta ex nec urna sodales egestas. Aenean cursus dui eu accumsan gravida. Donec eu justo hendrerit dolor gravida luctus eu ut ipsum. Aenean sagittis turpis urna, et semper dui interdum ac.', 1, 'Titre article 26', 'dossier', ''),
 (27, 'Mireille Barrientos', 'discosites.fr', '10/10/2017', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse congue auctor purus, vitae suscipit nibh viverra at. Phasellus rutrum auctor neque sit amet mattis. Nunc et vulputate libero. Nullam auctor posuere vulputate. Fusce a sodales ex, non imperdiet dui. Cras egestas sapien ultrices, dapibus enim egestas, accumsan massa. Cras a viverra velit.\r\n\r\nAenean tincidunt metus quis lacus porttitor, nec imperdiet nunc cursus. Suspendisse condimentum mauris vel pretium dapibus. Praesent dignissim, diam at viverra iaculis, quam enim posuere tellus, quis iaculis ligula dolor ac lectus. Duis porta ligula nec eros viverra lacinia. Maecenas feugiat hendrerit odio, eget faucibus massa consectetur quis. Pellentesque ultrices augue ac risus tincidunt fermentum. Nunc sit amet nibh tellus. Nam quam augue, lobortis a maximus non, varius id neque. Quisque tincidunt, elit in mattis pulvinar, ligula velit accumsan enim, eu vehicula nulla mauris bibendum ipsum. Pellentesque eleifend leo quis dictum placerat.\r\n\r\nMorbi in cursus urna. Nulla eget porta lacus, eu auctor diam. Proin lacinia consectetur scelerisque. Suspendisse volutpat rhoncus ornare. Pellentesque sagittis suscipit sapien pharetra vestibulum. Sed ullamcorper eros a lacus luctus rhoncus. Donec orci ipsum, ultrices eu porttitor sed, dictum quis sem. Fusce augue justo, auctor non vulputate ac, volutpat sed libero. Curabitur finibus commodo mi ut venenatis. Phasellus pellentesque quis leo et euismod.\r\n\r\nSed sem nisl, egestas ac ipsum et, tristique porta diam. Proin magna leo, mattis a sodales ac, viverra vel metus. Etiam lobortis euismod arcu condimentum vehicula. Phasellus pellentesque pulvinar leo, quis consectetur arcu sagittis eget. Ut elementum vitae neque porttitor tristique. Proin pellentesque accumsan dapibus. Aliquam condimentum dapibus purus ut cursus. Aenean a lacus et nulla lobortis lobortis. Phasellus bibendum dignissim consequat. Aliquam enim felis, tempus eget eros non, elementum ullamcorper ipsum. Fusce malesuada massa id faucibus auctor. Donec sagittis ut dui sit amet sagittis. Fusce euismod ligula quis dui accumsan hendrerit.', 0, 'Titre article 27', 'maison', '');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `boutique`
---
 
 CREATE TABLE `boutique` (
   `id` int(11) NOT NULL,
@@ -75,21 +58,11 @@ CREATE TABLE `boutique` (
   `accueil` tinyint(4) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Déchargement des données de la table `boutique`
---
-
 INSERT INTO `boutique` (`id`, `pays`, `ville`, `rue`, `numero`, `complement`, `nom`, `site`, `description`, `accueil`) VALUES
 (1, 'France', 'Paris', 'Avenue des Tuileries', 61, NULL, 'Décoloriage', 'www.decoloriage.fr', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam sit amet risus hendrerit libero dignissim dictum eu at sapien. Donec consequat mi augue, id accumsan sapien condimentum sed. Phasellus eget odio nunc. Pellentesque tempor ultricies ex vitae condimentum. Ut eu consectetur mauris, non pharetra lectus. Nullam fringilla feugiat nibh, quis euismod dui mollis quis. Nullam tincidunt purus ipsum. Fusce ante lectus, imperdiet et ultricies id, efficitur id lectus. Donec varius sollicitudin orci ut blandit. Phasellus vel urna vel orci finibus vulputate placerat sit amet eros. Integer id nisl magna. In pharetra orci at purus maximus ultrices. In ac consectetur metus. Sed tristique interdum sagittis. Interdum et malesuada fames ac ante ipsum primis in faucibus.\r\n\r\nMorbi consectetur pulvinar vehicula. Sed vitae scelerisque justo. Aenean dapibus bibendum euismod. Nam in nisl et lorem mollis porta. Fusce pretium iaculis posuere. Cras rhoncus rhoncus justo, sollicitudin imperdiet enim bibendum quis. Nam in mauris a ante imperdiet finibus. Suspendisse consectetur pulvinar varius. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Quisque rhoncus purus eget justo ultricies lobortis. Vivamus eu tincidunt urna, sed consectetur mi. Nullam eu elit facilisis, imperdiet nisi a, faucibus tortor. Pellentesque convallis pharetra nulla quis pulvinar. Integer lorem ligula, vestibulum id porttitor varius, pretium a dolor. Aenean bibendum, sem nec interdum tempus, erat urna sollicitudin velit, in commodo sapien sapien ut mi. In ac tincidunt diam.\r\n', 1),
 (2, 'France', 'Tournefeuille', 'Quai Saint-Nicolas', 60, NULL, 'Décolombe', 'www.decolombe.fr', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque non blandit felis, sed accumsan orci. Morbi egestas vulputate dui, a pellentesque mauris elementum sit amet. Pellentesque tincidunt arcu vel mauris tempor, vitae scelerisque quam ultricies. Quisque quis justo ullamcorper, porttitor orci sed, efficitur enim. Nulla lobortis eleifend neque at commodo. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Phasellus quis tempus ex. Morbi tincidunt malesuada congue. Quisque rutrum tellus eget blandit fringilla. Pellentesque laoreet ex ex, et posuere nisl luctus et. Donec interdum elit quis lorem pharetra lobortis. Mauris vitae sapien nunc.\r\n\r\nDonec tristique nibh tortor, et placerat dui luctus vel. Quisque vel nulla nulla. Fusce iaculis a arcu egestas molestie. Cras nibh felis, euismod ut turpis at, convallis eleifend dolor. Phasellus ut feugiat felis. Nam sagittis magna ut gravida sollicitudin. Integer viverra lobortis diam, et sodales leo ultrices gravida. Praesent cursus odio et viverra consequat. Praesent vitae semper velit. Sed ac turpis non enim convallis semper a ut ipsum. Suspendisse iaculis erat sit amet felis iaculis venenatis.\r\n\r\nUt tellus risus, efficitur accumsan elit vitae, sollicitudin vulputate lacus. Donec sed purus at augue blandit tincidunt a in augue. Donec a leo maximus sapien consequat maximus. Fusce id posuere dolor. Proin dictum ac ante quis euismod. Integer vitae odio sit amet ligula dapibus venenatis nec elementum neque. Curabitur aliquam sit amet elit a pharetra. Quisque elementum sapien eget ante tincidunt auctor. Cras egestas sodales erat, non ullamcorper nisi maximus quis. Maecenas tincidunt, tellus sed placerat vulputate, magna augue porta justo, id porta nisl velit et risus. Integer posuere sed nisl in commodo. Proin porttitor consectetur augue feugiat pretium. Maecenas a pretium sem, vel commodo odio. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam maximus nibh et erat ullamcorper tincidunt. Praesent aliquam euismod lectus eget cursus.', 1),
 (3, 'France', 'Angers', 'Chemin Des Bateliers', 26, NULL, 'Décolage', 'www.decolage.fr', 'Suspendisse pulvinar dapibus pretium. In turpis justo, interdum nec massa sit amet, euismod varius est. Morbi gravida viverra urna, et fringilla nibh ultricies ac. Sed congue nisi metus, at consequat est sodales vitae. Sed vel dictum nisl, sit amet eleifend dolor. Suspendisse sapien mauris, aliquam vel volutpat sed, euismod et eros. Sed condimentum pretium pellentesque. Duis facilisis ornare nulla tincidunt rutrum. Suspendisse nec dolor sit amet mauris aliquet hendrerit. Integer sit amet tristique turpis, ac scelerisque est.\r\n\r\nPhasellus cursus metus eget finibus vulputate. Ut efficitur dapibus dui, et bibendum magna blandit non. Donec ultricies velit pretium ante ullamcorper, in iaculis ex lobortis. Vivamus ac congue lectus. Curabitur auctor scelerisque mauris non egestas. Nunc convallis nec leo a tempor. Aliquam sit amet est ultrices, vestibulum urna sit amet, tincidunt sem. In mollis sapien sodales lectus condimentum, sit amet consectetur sapien aliquet. Etiam aliquet nec ipsum vitae porta. Ut eu neque urna. Vestibulum vitae luctus diam. Ut vulputate pulvinar mi, sed tristique lorem cursus vitae. In hac habitasse platea dictumst. Aliquam facilisis ipsum eget libero posuere ultrices.', 1),
 (4, 'France', 'Beaune', 'Rue de Limas', 46, NULL, 'Décoquillage', 'www.decoquillage.fr', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed finibus vehicula erat, sit amet cursus magna imperdiet nec. Nulla lacinia neque ex. Nunc molestie, est vel ullamcorper ullamcorper, sapien nunc maximus lectus, nec dignissim massa velit in nulla. Pellentesque ultricies nec arcu at mollis. Mauris viverra urna vel magna condimentum dapibus. Nullam at sapien at eros pulvinar auctor. Quisque consequat rutrum nunc, et cursus massa hendrerit posuere. Proin risus libero, rhoncus vel nibh nec, convallis ullamcorper tortor. Maecenas orci enim, volutpat vitae accumsan sed, cursus sed tortor. Nunc iaculis vehicula felis, a fringilla dui rutrum ac. Integer quis vestibulum mauris, ut elementum orci. Nulla quis suscipit enim. Curabitur orci ex, tempus at leo id, pulvinar lacinia nisl. Mauris blandit arcu at mattis gravida. Nunc at rutrum elit, vestibulum rhoncus ipsum. Proin non finibus lectus.\r\n\r\nNullam id eros tristique, tempus nisl quis, pellentesque erat. Nullam rutrum purus leo, non condimentum eros varius ut. Sed fringilla, massa eu gravida congue, neque urna condimentum erat, at semper diam sem sit amet elit. Aliquam elementum augue sit amet dignissim efficitur. Nullam at feugiat nisl. Praesent nunc tellus, lobortis sed erat at, fringilla lobortis enim. Etiam in tortor vestibulum, iaculis nulla id, tempor massa. Cras facilisis dictum tincidunt. Praesent quam leo, lobortis eget varius nec, venenatis eget velit. Phasellus et quam felis. Nulla facilisi. Vestibulum fermentum, quam sed suscipit ornare, purus justo scelerisque nisl, et feugiat enim urna vitae orci. Nullam quam lacus, tincidunt sit amet lectus volutpat, mollis commodo nunc. Nullam fringilla mi ut molestie condimentum. Etiam eu lectus vitae mi suscipit maximus. Proin hendrerit feugiat quam.\r\n\r\nMauris molestie nunc risus, sit amet porta nunc rhoncus sit amet. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Aenean commodo lobortis lacinia. Maecenas lectus dui, maximus at blandit porta, consectetur vitae felis. Proin ipsum ipsum, lobortis eu aliquet non, rutrum sed mauris. Integer nec mi non erat lobortis lobortis quis in felis. Fusce quis urna erat. Cras rhoncus id ante ut aliquam. Nunc euismod dui sed ex blandit suscipit. Praesent consequat tellus et nunc varius, non commodo tortor imperdiet. Sed tincidunt nibh id nisi tempus, ac dignissim sem vehicula. Nunc congue neque lectus, ut dapibus sapien ultrices sed. Donec varius lacus quis nulla sollicitudin, elementum condimentum nisi feugiat.', 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `catalogue`
---
 
 CREATE TABLE `catalogue` (
   `id` int(11) NOT NULL,
@@ -98,19 +71,9 @@ CREATE TABLE `catalogue` (
   `url` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Déchargement des données de la table `catalogue`
---
-
 INSERT INTO `catalogue` (`id`, `id_marque`, `date`, `url`) VALUES
 (1, 1, '23/04/2018', 'catalogue.pdf'),
 (2, 2, '18/02/2017', 'catalogue2.pdf');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `image`
---
 
 CREATE TABLE `image` (
   `id` int(11) NOT NULL,
@@ -122,10 +85,6 @@ CREATE TABLE `image` (
   `id_article` int(11) DEFAULT NULL,
   `main` tinyint(1) NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Déchargement des données de la table `image`
---
 
 INSERT INTO `image` (`id`, `url`, `credit`, `id_marque`, `id_produit`, `id_boutique`, `id_article`, `main`) VALUES
 (1, '3.jpg', 'Bruno Dupond', NULL, 1, NULL, NULL, 1),
@@ -173,20 +132,10 @@ INSERT INTO `image` (`id`, `url`, `credit`, `id_marque`, `id_produit`, `id_bouti
 (43, '29.jpg', 'Pansy Clavette', NULL, NULL, NULL, 27, 1),
 (44, '45.jpg', 'Michèle Roussel', NULL, NULL, NULL, 1, 0);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `lien_tag_article`
---
-
 CREATE TABLE `lien_tag_article` (
   `id_article` int(11) DEFAULT NULL,
   `id_tag` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Déchargement des données de la table `lien_tag_article`
---
 
 INSERT INTO `lien_tag_article` (`id_article`, `id_tag`) VALUES
 (1, 3),
@@ -230,12 +179,6 @@ INSERT INTO `lien_tag_article` (`id_article`, `id_tag`) VALUES
 (23, 8),
 (24, 1);
 
--- --------------------------------------------------------
-
---
--- Structure de la table `marque`
---
-
 CREATE TABLE `marque` (
   `id` int(11) NOT NULL,
   `nom` varchar(255) DEFAULT NULL,
@@ -244,22 +187,12 @@ CREATE TABLE `marque` (
   `accueil` tinyint(1) NOT NULL DEFAULT '0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Déchargement des données de la table `marque`
---
-
 INSERT INTO `marque` (`id`, `nom`, `site`, `description`, `accueil`) VALUES
 (1, 'Pip Studio', 'www.pipstudio.com', 'Fusce in dolor posuere, sollicitudin diam sed, ornare urna. Phasellus sit amet metus ac urna aliquet mattis eget sed ex. Sed egestas dolor diam, pharetra consectetur nisi vehicula ac. Mauris hendrerit vulputate auctor. Maecenas ullamcorper lorem eros, eu efficitur augue pretium non. Nullam viverra, tortor quis tempus rhoncus, leo mauris feugiat arcu, non aliquet leo dui vulputate diam. Aenean a purus id turpis congue feugiat eu eu felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dignissim neque ex, id rhoncus tellus fermentum blandit. Praesent facilisis, risus a finibus gravida, velit eros accumsan sem, ultrices gravida massa est non justo.\r\n', 1),
 (2, 'Moth City', 'www.mothcity.com', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum et felis et magna convallis ultrices. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nunc fermentum, lorem ac efficitur iaculis, felis dolor efficitur tortor, vel porta erat mi et quam. Cras dapibus malesuada scelerisque. Mauris ut pharetra urna. Aliquam erat volutpat. Praesent interdum lectus ante, a iaculis justo vehicula ac. Suspendisse consectetur facilisis erat ut porttitor. In nec tortor diam. Aliquam a nibh neque. Aenean dictum justo in ornare ultrices. Praesent nibh dui, ultrices ac mauris eleifend, maximus scelerisque urna. Vestibulum luctus blandit mauris, eget porttitor mi rutrum id. Donec orci elit, blandit in auctor sit amet, elementum pulvinar felis. Sed gravida justo ac lectus condimentum facilisis. Integer purus leo, elementum rhoncus ultrices a, ultricies sed ante.\r\n\r\nAenean lacinia ex quis leo accumsan, et pellentesque eros pharetra. Nullam in ante metus. Proin pretium ligula sit amet consequat tempus. Vestibulum lacinia pretium mi sed sodales. Aenean id orci posuere, feugiat arcu id, imperdiet augue. Vivamus dictum lacus eros, ac ornare nulla gravida aliquet. Nunc auctor ut dolor eget convallis. Sed non suscipit quam. Donec rhoncus velit in lobortis volutpat.\r\n', 1),
 (3, 'Maileg', 'www.maileg.com', 'Curabitur dapibus tortor at dui dictum, at malesuada erat pulvinar. Maecenas mattis, augue in posuere dapibus, metus quam mattis nunc, et mollis nibh metus eu erat. Praesent eget sagittis ex. Etiam pharetra lobortis orci, at tempor massa mollis quis. Mauris dapibus egestas facilisis. Donec eget interdum neque. Nulla sed sem libero. Morbi porttitor lectus nibh, eget porttitor nulla mattis vitae. Pellentesque fermentum, felis cursus gravida vehicula, libero tellus varius lacus, et hendrerit mauris lectus quis quam. Fusce nulla mauris, efficitur id elementum et, eleifend eu dui. Donec maximus elit purus, eget placerat quam suscipit quis. Curabitur ornare efficitur erat non interdum. Integer quis commodo enim. Morbi in nibh consequat massa imperdiet ornare. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Praesent luctus sodales orci, consequat faucibus purus elementum vel.\r\n\r\nDuis posuere, sem et finibus porta, ante sem dapibus sem, non vestibulum purus nisi mattis leo. Donec in bibendum leo. Phasellus a lorem at ante dignissim mattis. Aenean dictum ante vitae tincidunt ornare. Praesent quis bibendum arcu. Suspendisse sapien est, suscipit in aliquet sit amet, rhoncus non nisi. Vivamus tincidunt magna vel ullamcorper condimentum.\r\n\r\nDonec vel risus a nibh auctor vehicula. Sed turpis tortor, sollicitudin quis massa et, molestie vulputate velit. Donec semper erat ex, sit amet gravida ligula aliquam sit amet. Fusce vel hendrerit dui, id pretium tellus. Duis a velit at tellus facilisis sollicitudin. Ut dictum tellus sit amet luctus semper. Duis porta malesuada arcu, non convallis eros iaculis sit amet. Cras consectetur felis quis nisl tempor rhoncus. Nam consequat justo ut nisl convallis iaculis. Suspendisse et ligula vel sapien laoreet sagittis a vitae lorem. Suspendisse potenti. Maecenas sed faucibus dui. Maecenas id orci erat. Vivamus urna dui, accumsan et eros sed, posuere tincidunt risus. Nunc venenatis justo ut turpis feugiat dignissim.', 1),
 (4, 'Räder', 'www.rader.com', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus porta interdum ligula, id porta nibh vulputate quis. Curabitur eu nunc sollicitudin, molestie libero in, volutpat ipsum. Proin convallis ornare sollicitudin. Duis bibendum a tortor non varius. Ut convallis finibus dolor ut malesuada. Sed tincidunt pulvinar sem, ac malesuada nibh pretium nec. Curabitur rutrum congue rhoncus. Curabitur placerat arcu eget turpis lacinia, et rutrum sem tincidunt. Donec mollis consectetur semper. Etiam eleifend, velit in malesuada congue, odio quam sollicitudin tellus, quis ornare justo massa quis lacus. Vivamus sodales vel tellus ut commodo. Proin eu lectus mattis lacus interdum eleifend ac a dui. Nam aliquam interdum ligula, sed mattis quam aliquam sit amet. Quisque volutpat vestibulum justo, id tincidunt ante faucibus ut. Pellentesque mi erat, tincidunt consequat fringilla sit amet, consectetur vitae eros.\r\n\r\nCras blandit turpis eu imperdiet aliquam. Nullam sit amet malesuada tellus, a congue arcu. Fusce at porttitor tortor. Vestibulum ligula urna, accumsan in mollis at, viverra nec nunc. Maecenas consequat aliquam tristique. Maecenas sed convallis risus, et consectetur ex. Nulla nibh arcu, vehicula vitae odio sit amet, vestibulum vestibulum ante. Donec elementum nisl eu facilisis cursus. Vestibulum maximus metus vitae dolor suscipit convallis. Integer rhoncus sollicitudin risus, sit amet semper velit gravida sit amet. Morbi eget arcu eu lacus tincidunt condimentum vitae non velit. Vestibulum porttitor ante pharetra nunc vestibulum aliquet. Sed lobortis diam vel efficitur luctus. Vivamus non ultrices urna. Nulla facilisi. Nunc nec ex imperdiet, semper neque vitae, ullamcorper tortor.', 1),
 (5, 'Sia', 'www.siahomefashion.com', 'Etiam convallis porttitor est, quis efficitur ligula porttitor quis. Pellentesque dignissim auctor dolor eu venenatis. In ipsum ipsum, sollicitudin sit amet venenatis vel, ultrices vitae enim. Morbi ultrices posuere lectus, in vulputate erat finibus scelerisque. Vestibulum id pulvinar orci, id rutrum risus. Suspendisse tempus dolor at bibendum viverra. Quisque vitae purus vehicula, faucibus lacus non, luctus tellus. Proin sed volutpat nunc. Suspendisse ex ante, vehicula eget porttitor non, tristique eget turpis. Donec eu dignissim velit. Quisque id fermentum nunc. Suspendisse dignissim ultricies pretium.\r\n\r\nNulla facilisi. Aenean mattis lorem ac quam imperdiet sollicitudin. Morbi a condimentum velit. Proin a diam sit amet augue tincidunt pretium quis et ante. Nam a nisl posuere, tempus turpis sed, mattis elit. Maecenas consectetur porta lectus, et mattis felis efficitur eu. Nullam tincidunt est non justo varius, quis porttitor felis cursus. Nunc interdum velit eros, nec semper dolor tincidunt at.\r\n\r\nIn eget bibendum enim. Nullam hendrerit tempus auctor. Vestibulum ornare gravida magna. Ut ultrices mi nec massa aliquam imperdiet. Mauris malesuada porta metus et interdum. Vestibulum sit amet purus eget eros molestie ullamcorper. Proin mi massa, vulputate a efficitur sit amet, malesuada ac neque. Etiam fermentum urna quis odio ultrices, in vestibulum ligula feugiat. Vivamus id urna dui.', 1);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `product`
---
 
 CREATE TABLE `product` (
   `id` int(11) NOT NULL,
@@ -277,10 +210,6 @@ CREATE TABLE `product` (
   `nom` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
---
--- Déchargement des données de la table `product`
---
-
 INSERT INTO `product` (`id`, `categorie`, `sous_categorie`, `couleur`, `couleur_type`, `matiere`, `forme`, `prix`, `id_marque`, `collection`, `numero`, `description`, `nom`) VALUES
 (1, 'chambre', 'pot', 'beige', 'naturel', 'bois', 'arrondi', 30, 1, 'automne 2018', 2372639, 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dolor ipsum, varius eu lacus quis, lacinia mattis dui. Cras a diam quis nunc pulvinar semper. Duis non diam nulla. Nunc consequat justo vitae nisi lobortis, eget vestibulum nulla sollicitudin. Mauris sed dignissim orci. Nam pulvinar turpis quis erat scelerisque, vitae ornare mauris luctus. Cras ac dapibus risus. Proin tortor dui, fermentum at pharetra in, auctor et enim. Vivamus malesuada vitae felis sit amet consequat. Mauris ullamcorper elementum arcu eu dapibus. Nunc ut ipsum ut massa viverra ultrices pharetra non leo.', 'Pot naturel'),
 (2, 'salon', 'chaise', 'brun', 'naturel', 'bois', 'carre', 50, 2, 'hiver 2017', 2372639, 'Nullam varius sapien sit amet rutrum varius. In malesuada massa id turpis consectetur, vel vulputate lectus semper. Cras ornare posuere ex et blandit. Nulla feugiat nunc nec diam aliquam, quis dapibus felis tincidunt. Nulla ut finibus mauris. Donec laoreet libero vitae nisl suscipit ultricies. Sed in placerat nisi. Integer sem sapien, rutrum id turpis id, lacinia eleifend felis. Integer pulvinar, diam ac ultricies euismod, lectus odio luctus quam, vitae vulputate elit leo id ipsum. Sed sollicitudin ex non luctus sodales. Maecenas id dictum libero.', 'Chaise design'),
@@ -290,20 +219,10 @@ INSERT INTO `product` (`id`, `categorie`, `sous_categorie`, `couleur`, `couleur_
 (6, 'salle de bain', 'baignoire', 'blanc', 'unie', 'metal', 'arrondi', 450, 4, '', 2372639, 'Quisque ac elit risus. Praesent pellentesque, mi ut consectetur scelerisque, elit diam placerat lectus, a commodo libero felis at felis. Nunc gravida interdum purus eget suscipit. Cras at mi finibus, tincidunt ipsum quis, sagittis ligula. Cras eget mi nunc. Curabitur vel molestie nulla, a tempus lacus. Maecenas vestibulum posuere turpis non dictum. Etiam faucibus odio vitae lectus tristique bibendum ut eget lectus.\r\n', 'Baignoire design'),
 (7, 'jardin', 'bougie', 'rouge', 'carreau', 'metal', 'rond', 20, 1, 'ete 2017', 2372639, 'Fusce in dolor posuere, sollicitudin diam sed, ornare urna. Phasellus sit amet metus ac urna aliquet mattis eget sed ex. Sed egestas dolor diam, pharetra consectetur nisi vehicula ac. Mauris hendrerit vulputate auctor. Maecenas ullamcorper lorem eros, eu efficitur augue pretium non. Nullam viverra, tortor quis tempus rhoncus, leo mauris feugiat arcu, non aliquet leo dui vulputate diam. Aenean a purus id turpis congue feugiat eu eu felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean dignissim neque ex, id rhoncus tellus fermentum blandit. Praesent facilisis, risus a finibus gravida, velit eros accumsan sem, ultrices gravida massa est non justo.\r\n', 'Bougie de jardin');
 
--- --------------------------------------------------------
-
---
--- Structure de la table `tag`
---
-
 CREATE TABLE `tag` (
   `id` int(11) NOT NULL,
   `label` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Déchargement des données de la table `tag`
---
 
 INSERT INTO `tag` (`id`, `label`) VALUES
 (1, 'tag1'),
@@ -315,94 +234,44 @@ INSERT INTO `tag` (`id`, `label`) VALUES
 (7, 'tag7'),
 (8, 'tag8');
 
---
--- Index pour les tables déchargées
---
-
---
--- Index pour la table `article`
---
 ALTER TABLE `article`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `boutique`
---
 ALTER TABLE `boutique`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `catalogue`
---
 ALTER TABLE `catalogue`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `image`
---
 ALTER TABLE `image`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `marque`
---
 ALTER TABLE `marque`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `product`
---
 ALTER TABLE `product`
   ADD PRIMARY KEY (`id`);
 
---
--- Index pour la table `tag`
---
 ALTER TABLE `tag`
   ADD PRIMARY KEY (`id`);
 
---
--- AUTO_INCREMENT pour les tables déchargées
---
-
---
--- AUTO_INCREMENT pour la table `article`
---
 ALTER TABLE `article`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
---
--- AUTO_INCREMENT pour la table `boutique`
---
 ALTER TABLE `boutique`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
---
--- AUTO_INCREMENT pour la table `catalogue`
---
 ALTER TABLE `catalogue`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
---
--- AUTO_INCREMENT pour la table `image`
---
 ALTER TABLE `image`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=45;
 
---
--- AUTO_INCREMENT pour la table `marque`
---
 ALTER TABLE `marque`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
---
--- AUTO_INCREMENT pour la table `product`
---
 ALTER TABLE `product`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
---
--- AUTO_INCREMENT pour la table `tag`
---
 ALTER TABLE `tag`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;

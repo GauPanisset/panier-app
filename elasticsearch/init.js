@@ -2,7 +2,7 @@ const elasticsearch = require('elasticsearch');
 const DB = require('../database/init.js');
 const axios = require('axios');
 
-const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net"; //process.env.BONZAI_URL;
+const url = process.env.BONZAI_URL;//"https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
 
 let config;
 
@@ -190,7 +190,7 @@ function defFilter(data) {
     return res;
 
 }
-/*
+
 let productPromise = new Promise((resolve, reject) => {
     //Promesse permettant de récupérer tous les produits de la base de données.
     DB.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", (err, data) => {
@@ -289,7 +289,6 @@ articlePromise.then((data) => {
                         },
                         "date": {
                             "type": "date",
-                            "format": "dd/MM/yyyy"
                         }
                     }
                 }
@@ -300,7 +299,6 @@ articlePromise.then((data) => {
     }).catch(console.err);
 }).catch(console.err);
 
-*/
 
 module.exports.search = search;
 module.exports.indices = indices;

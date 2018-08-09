@@ -3,8 +3,22 @@ const router = Express.Router();
 const DB = require('../database/init.js');
 
 router.get('/index/:id', (req, res, next) => {
+
+    let sort_by = "ORDER BY ";
+    if (req.query.order !== undefined) {
+        const all_sorts = {
+            "alphaC": "boutique.nom ASC",
+            "alphaD": "boutique.nom DESC",
+            "dateC": "''",
+            "dateD": "''",
+        };
+        sort_by += all_sorts[req.query.order];
+    } else {
+        sort_by += "''";
+    }
+
     if (req.params.id === 'all') {
-        DB.query("SELECT boutique.id AS id, image.url AS image, boutique.nom AS name FROM boutique INNER JOIN image ON image.id_boutique = boutique.id", [req.params.id], (err, data) => {
+        DB.query("SELECT boutique.id AS id, image.url AS image, boutique.nom AS name FROM boutique INNER JOIN image ON image.id_boutique = boutique.id " + sort_by, [req.params.id], (err, data) => {
             if (err) {
                 return next(err);
             } else {
@@ -12,7 +26,7 @@ router.get('/index/:id', (req, res, next) => {
             }
         });
     } else {
-        DB.query("SELECT boutique.id AS id, image.url AS image, boutique.nom AS name FROM boutique INNER JOIN image ON image.id_boutique = boutique.id WHERE boutique.id = ?", [req.params.id], (err, data) => {
+        DB.query("SELECT boutique.id AS id, image.url AS image, boutique.nom AS name FROM boutique INNER JOIN image ON image.id_boutique = boutique.id WHERE boutique.id = ? " + sort_by, [req.params.id], (err, data) => {
             if (err) {
                 return next(err);
             } else {
