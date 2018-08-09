@@ -4,6 +4,8 @@ const HTTP = require('http');
 
 const app = Express();
 
+const PORT = process.env.PORT || 3031;
+
 app.use(BP.json());
 
 app.use(function(req, res, next) {
@@ -22,12 +24,12 @@ setInterval(function() {
     HTTP.get("http://panier-app.herokuapp.com");
 }, 300000);
 
-app.listen(3031, (err) => {
+app.listen(PORT, (err) => {
 
     if (err) {
         console.log(err);
     }
     else {
-        console.log('app listening on port 3031');
+        console.log('app listening on port' + PORT);
     }
 });
