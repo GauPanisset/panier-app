@@ -35,13 +35,15 @@ function handleDisconnect() {
             handleDisconnect();
         } else {
             console.log('connected');
+            setInterval(function() {
+                data.query('SELECT 1');
+            }, 5000);
         }
     });
 
     data.on('error', function(err) {
         console.log('db error', err);
         if(err.code === 'PROTOCOL_CONNECTION_LOST' || err.fatal) {
-            err.fatal = false;
             handleDisconnect();
         } else {
             throw err;
