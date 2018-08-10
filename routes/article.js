@@ -29,7 +29,7 @@ router.get('/section/:type', (req, res, next) => {
         sort_by += "''";
     }
 
-    DB.query("SELECT article.id AS id, article.date AS date,  image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = ? " + sort_by, [req.params.type], (err, data) => {
+    DB.query("SELECT article.id AS id, date_format(article.date, '%Y-%m-%d') AS date,  image.url AS image, article.titre AS name, article.texte AS text, article.sous_titre AS subtitle FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.type = ? " + sort_by, [req.params.type], (err, data) => {
         if (err) {
             return next(err);
         } else {
@@ -39,7 +39,7 @@ router.get('/section/:type', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-    DB.query("SELECT article.id AS id, article.date AS date, article.texte AS texte, article.titre AS titre, article.sous_titre AS sous_titre, GROUP_CONCAT(tag.label) AS tags FROM article LEFT JOIN lien_tag_article ON lien_tag_article.id_article = article.id LEFT JOIN tag ON tag.id = lien_tag_article.id_tag GROUP BY article.id HAVING article.id = ?", [req.params.id], (err, data) => {
+    DB.query("SELECT article.id AS id, date_format(article.date, '%Y-%m-%d') AS date, article.texte AS texte, article.titre AS titre, article.sous_titre AS sous_titre, GROUP_CONCAT(tag.label) AS tags FROM article LEFT JOIN lien_tag_article ON lien_tag_article.id_article = article.id LEFT JOIN tag ON tag.id = lien_tag_article.id_tag GROUP BY article.id HAVING article.id = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
         } else {
