@@ -18,7 +18,6 @@ app.use('/product', require('./routes/product.js').router);
 app.use('/article', require('./routes/article.js').router);
 app.use('/brand', require('./routes/brand.js').router);
 app.use('/shop', require('./routes/shop.js').router);
-app.use('/filter', require('./routes/filter.js').router);
 
 setInterval(function() {
     HTTP.get("http://panier-app.herokuapp.com");
