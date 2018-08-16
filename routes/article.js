@@ -18,13 +18,18 @@ router.get('/section/:type', (req, res, next) => {
 
     let sort_by = "ORDER BY ";
     if (req.query.order !== undefined) {
+
         const all_sorts = {
             "alphaC": "article.titre ASC",
             "alphaD": "article.titre DESC",
             "dateC": "article.date ASC",
             "dateD": "article.date DESC",
         };
-        sort_by += all_sorts[req.query.order];
+        req.query.order.split(' ').forEach(item => {
+            sort_by += all_sorts[item] + ",";
+        });
+        sort_by = sort_by.slice(0, -1);
+
     } else {
         sort_by += "''";
     }
