@@ -2,7 +2,34 @@ const Express = require('express');
 const router = Express.Router();
 const DB = require('../database/init.js');
 const Elastic = require('../elasticsearch/init.js');
+const Verif = require('../src/verifyToken.js');
 
+router.post('/create', Verif.isAdmin, (req, res, next) => {
+    DB.query('INSERT INTO article (auteur, lien, date, texte, accueil, titre, type, sous_titre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.auteur, req.body.lien, req.body.date, req.body.texte, req.body.accueil, req.body.titre, req.body.type, req.body.sous_titre], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
+
+router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
+    DB.query('UPDATE article SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_article], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/', Verif.isAdmin, (req, res, next) => {
+    DB.query('DELETE FROM article WHERE id = ?', [req.body.id_article], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
 
 router.get('/accueil/:type', (req, res, next) => {
     DB.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = ?", [req.params.type], (err, data) => {

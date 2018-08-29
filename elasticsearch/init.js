@@ -2,8 +2,8 @@ const elasticsearch = require('elasticsearch');
 const DB = require('../database/init.js');
 const axios = require('axios');
 
-const url = process.env.BONSAI_URL;
-//const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
+//const url = process.env.BONSAI_URL;
+const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
 
 let config;
 

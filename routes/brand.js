@@ -1,6 +1,41 @@
 const Express = require('express');
 const router = Express.Router();
 const DB = require('../database/init.js');
+const Verif = require('../src/verifyToken.js');
+
+router.post('/create', Verif.isAdmin, (req, res, next) => {
+    DB.query('INSERT INTO marque (nom, site, description, accueil) VALUES (?, ?, ?, ?)', [req.body.nom, req.body.site, req.body.description, req.body.accueil], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
+
+router.patch('/:prop', Verif.isBrand, (req, res, next) => {
+    if (req.body.id_marque !== req.brandId) {
+        Verif.isAdmin();
+    }
+    DB.query('UPDATE marque SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_marque], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/', Verif.isBrand, (req, res, next) => {
+    if(req.body.id_marque !== req.brandId) {
+        Verif.isAdmin();
+    }
+    DB.query('DELETE FROM marque WHERE id = ?', [req.body.id_marque], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+    DB.query('UPDATE utilisateurs SET id_marque = 0 WHERE id_marque = ?', [req.body.id_marque])
+});
 
 router.get('/index/:id', (req, res, next) => {
 

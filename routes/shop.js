@@ -1,6 +1,34 @@
 const Express = require('express');
 const router = Express.Router();
 const DB = require('../database/init.js');
+const Verif = require('../src/verifyToken.js');
+
+router.post('/create', Verif.isAdmin, (req, res, next) => {
+    DB.query('INSERT INTO boutique (pays, ville, rue, numero, complement, nom, site, description, accueil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.pays, req.body.ville, req.body.rue, req.body.numero, req.body.complement, req.body.nom, req.body.site, req.body.description, req.body.accueil], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
+
+router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
+    DB.query('UPDATE boutique SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_boutique], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/', Verif.isAdmin, (req, res, next) => {
+    DB.query('DELETE FROM boutique WHERE id = ?', [req.body.id_boutique], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
 
 router.get('/index/:id', (req, res, next) => {
 

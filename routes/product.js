@@ -2,6 +2,44 @@ const Express = require('express');
 const router = Express.Router();
 const DB = require('../database/init.js');
 const Elastic = require('../elasticsearch/init.js');
+const Verif = require('../src/verifyToken.js');
+
+
+router.post('/create', Verif.isBrand, (req, res, next) => {
+    if (req.body.id_marque !== req.brandId) {
+        Verif.isAdmin();
+    }
+    DB.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
+
+router.patch('/:prop', Verif.isBrand, (req, res, next) => {
+    if (req.body.id_marque !== req.brandId) {
+        Verif.isAdmin();
+    }
+    DB.query('UPDATE product SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_product], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/', Verif.isBrand, (req, res, next) => {
+    if(req.body.id_marque !== req.brandId) {
+        Verif.isAdmin();
+    }
+    DB.query('DELETE FROM product WHERE id = ?', [req.body.id_product], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    })
+});
 
 router.get('/index/:id', (req, res, next) => {
     if (req.params.id === 'all') {
