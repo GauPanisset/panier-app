@@ -3,17 +3,26 @@ const router = Express.Router();
 const DB = require('../database/init.js');
 const Verif = require('../src/verifyToken.js');
 
-router.post('/create', Verif.isAdmin, (req, res, next) => {
+router.options('*', (req, res, next) => {
+    res.status(200).end();
+});
+
+router.post('/create', (req, res, next) => {
     DB.query('INSERT INTO boutique (pays, ville, rue, numero, complement, nom, site, description, accueil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.pays, req.body.ville, req.body.rue, req.body.numero, req.body.complement, req.body.nom, req.body.site, req.body.description, req.body.accueil], (err) => {
         if (err) {
             return next(err);
         }
-        res.status(200).end();
+        DB.query('SELECT id FROM boutique WHERE nom = ? AND ville = ? AND rue = ?', [req.body.nom, req.body.ville, req.body.rue], (err, data) => {
+            if (err) {
+                return next(err);
+            }
+            res.json(data);
+        })
     })
 });
 
 router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
-    DB.query('UPDATE boutique SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_boutique], (err) => {
+    DB.query('UPDATE boutique SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -21,8 +30,8 @@ router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
     });
 });
 
-router.delete('/', Verif.isAdmin, (req, res, next) => {
-    DB.query('DELETE FROM boutique WHERE id = ?', [req.body.id_boutique], (err) => {
+router.delete('/:id', Verif.isAdmin, (req, res, next) => {
+    DB.query('DELETE FROM boutique WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -47,6 +56,14 @@ router.get('/index/:id', (req, res, next) => {
 
     if (req.params.id === 'all') {
         DB.query("SELECT boutique.id AS id, image.url AS image, boutique.nom AS name FROM boutique INNER JOIN image ON image.id_boutique = boutique.id " + sort_by, [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            } else {
+                return res.json(data);
+            }
+        });
+    } else if (req.params.id === 'allback') {
+        DB.query("SELECT id, nom, site, description, accueil, pays, ville, rue, numero, complement FROM boutique", (err, data) => {
             if (err) {
                 return next(err);
             } else {

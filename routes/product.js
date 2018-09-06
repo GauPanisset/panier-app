@@ -4,24 +4,32 @@ const DB = require('../database/init.js');
 const Elastic = require('../elasticsearch/init.js');
 const Verif = require('../src/verifyToken.js');
 
+router.options('*', (req, res, next) => {
+    res.status(200).end();
+});
 
 router.post('/create', Verif.isBrand, (req, res, next) => {
     if (req.body.id_marque !== req.brandId) {
-        Verif.isAdmin();
+        router.use(Verif.isAdmin);
     }
     DB.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom], (err) => {
         if (err) {
             return next(err);
         }
-        res.status(200).end();
+        DB.query('SELECT id FROM product WHERE nom = ? AND id_marque = ? AND couleur = ?', [req.body.nom, req.body.id_marque, req.body.couleur], (err, data) => {
+            if (err) {
+                return next(err);
+            }
+            res.json(data);
+        })
     })
 });
 
 router.patch('/:prop', Verif.isBrand, (req, res, next) => {
     if (req.body.id_marque !== req.brandId) {
-        Verif.isAdmin();
+        router.use(Verif.isAdmin);
     }
-    DB.query('UPDATE product SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_product], (err) => {
+    DB.query('UPDATE product SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -29,11 +37,11 @@ router.patch('/:prop', Verif.isBrand, (req, res, next) => {
     });
 });
 
-router.delete('/', Verif.isBrand, (req, res, next) => {
+router.delete('/:id', Verif.isBrand, (req, res, next) => {
     if(req.body.id_marque !== req.brandId) {
-        Verif.isAdmin();
+        router.use(Verif.isAdmin);
     }
-    DB.query('DELETE FROM product WHERE id = ?', [req.body.id_product], (err) => {
+    DB.query('DELETE FROM product WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -42,7 +50,7 @@ router.delete('/', Verif.isBrand, (req, res, next) => {
 });
 
 router.get('/index/:id', (req, res, next) => {
-    if (req.params.id === 'all') {
+    if (req.params.id === 'allback') {
         DB.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", [req.params.id], (err, data) => {
             if (err) {
                 return next(err);

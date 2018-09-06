@@ -4,17 +4,26 @@ const DB = require('../database/init.js');
 const Elastic = require('../elasticsearch/init.js');
 const Verif = require('../src/verifyToken.js');
 
+router.options('*', (req, res, next) => {
+    res.status(200).end();
+});
+
 router.post('/create', Verif.isAdmin, (req, res, next) => {
     DB.query('INSERT INTO article (auteur, lien, date, texte, accueil, titre, type, sous_titre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.auteur, req.body.lien, req.body.date, req.body.texte, req.body.accueil, req.body.titre, req.body.type, req.body.sous_titre], (err) => {
         if (err) {
             return next(err);
         }
-        res.status(200).end();
+        DB.query('SELECT id FROM article WHERE titre = ? AND sous_titre = ? AND auteur = ?', [req.body.titre, req.body.sous_titre, req.body.auteur], (err, data) => {
+            if (err) {
+                return next(err);
+            }
+            res.json(data);
+        })
     })
 });
 
 router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
-    DB.query('UPDATE article SET ? = ? WHERE id = ?', [req.params.prop, req.body.value, req.body.id_article], (err) => {
+    DB.query('UPDATE article SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -22,8 +31,8 @@ router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
     });
 });
 
-router.delete('/', Verif.isAdmin, (req, res, next) => {
-    DB.query('DELETE FROM article WHERE id = ?', [req.body.id_article], (err) => {
+router.delete('/:id', Verif.isAdmin, (req, res, next) => {
+    DB.query('DELETE FROM article WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -39,6 +48,26 @@ router.get('/accueil/:type', (req, res, next) => {
             return res.json(data);
         }
     });
+});
+
+router.get('/index/:id', (req, res, next) => {
+    if (req.params.id === 'allback') {
+        DB.query("SELECT id, auteur, lien, date, texte, accueil,titre, type, sous_titre FROM article", (err, data) => {
+            if (err) {
+                return next(err);
+            } else {
+                return res.json(data);
+            }
+        });
+    } else {
+        DB.query("SELECT id, auteur, lien, date, texte, accueil,titre, type, sous_titre FROM article WHERE id = ?", [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            } else {
+                return res.json(data);
+            }
+        });
+    }
 });
 
 router.get('/section/:type', (req, res, next) => {
