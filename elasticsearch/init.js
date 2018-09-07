@@ -2,8 +2,8 @@ const elasticsearch = require('elasticsearch');
 const DB = require('../database/init.js');
 const axios = require('axios');
 
-//const url = process.env.BONSAI_URL;
-const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
+const url = process.env.BONSAI_URL;
+//const url = "https://utiw9mrv2v:fsqhmxjl59@cherry-8098743.us-east-1.bonsaisearch.net";
 
 let config;
 
@@ -204,7 +204,8 @@ function defFilter(data) {
 
 let productPromise = new Promise((resolve, reject) => {
     //Promesse permettant de récupérer tous les produits de la base de données.
-    DB.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", (err, data) => {
+    DB.checkConnection();
+    DB.data.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", (err, data) => {
         if (err) {
             reject(err);
         }
@@ -264,7 +265,8 @@ productPromise.then((data) => {
 }).catch(console.err);
 
 let articlePromise = new Promise((resolve, reject) => {
-    DB.query("SELECT article.id AS id, article.date AS date, article.type AS type, article.texte AS texte, article.titre AS titre, article.sous_titre AS sous_titre, GROUP_CONCAT(tag.label) AS tags FROM article LEFT JOIN lien_tag_article ON lien_tag_article.id_article = article.id LEFT JOIN tag ON tag.id = lien_tag_article.id_tag GROUP BY article.id", (err, data) => {
+    DB.checkConnection();
+    DB.data.query("SELECT article.id AS id, article.date AS date, article.type AS type, article.texte AS texte, article.titre AS titre, article.sous_titre AS sous_titre, GROUP_CONCAT(tag.label) AS tags FROM article LEFT JOIN lien_tag_article ON lien_tag_article.id_article = article.id LEFT JOIN tag ON tag.id = lien_tag_article.id_tag GROUP BY article.id", (err, data) => {
         if (err) {
             reject(err);
         }

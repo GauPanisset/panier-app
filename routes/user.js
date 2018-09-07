@@ -7,10 +7,13 @@ const router = Express.Router();
 const DB = require('../database/init.js');
 const Verif = require('../src/verifyToken.js');
 
+router.options('*', (req, res, next) => {
+    res.status(200).end();
+});
 
 Passport.use(new BasicStrategy((username,password,done)=>{
-    console.log(username + " === " + password);
-    DB.query('SELECT * FROM utilisateurs WHERE pseudo=?',[username],(err,user)=>{
+    DB.checkConnection();
+    DB.data.query('SELECT * FROM utilisateurs WHERE pseudo=?',[username],(err,user)=>{
         if(err){//bad request
             return done(err);
         }
@@ -34,17 +37,29 @@ Passport.use(new BasicStrategy((username,password,done)=>{
 
 }));
 
-router.get('/info/:id', (req, res, next) => {           //Validate
-    DB.query('SELECT * FROM utilisateurs WHERE id = ?', [req.params.id], (err, data) => {
-        if (err) {
-            return next(err);
-        }
-        return res.json(data);
-    });
+router.get('/index/:id', (req, res, next) => {
+    DB.checkConnection();
+    if (req.params.id == 'allback') {
+        DB.data.query('SELECT * FROM utilisateurs', [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            }
+            return res.json(data);
+        });
+    } else {
+        DB.data.query('SELECT * FROM utilisateurs WHERE id = ?', [req.params.id], (err, data) => {
+            if (err) {
+                return next(err);
+            }
+            return res.json(data);
+        });
+    }
 });
 
 router.post('/create', (req, res, next) => {
-    DB.query('INSERT INTO utilisateurs (pseudo, mail, mdp, id_marque) VALUES (?, ?, ?, ?)', [req.body.pseudo, req.body.mail, req.body.mdp, req.body.marque], (err) => {
+    DB.checkConnection();
+    req.body.mdp = Bcrypt.hashSync(req.body.mdp, 8);
+    DB.data.query('INSERT INTO utilisateurs (pseudo, mail, mdp, id_marque) VALUES (?, ?, ?, ?)', [req.body.pseudo, req.body.mail, req.body.mdp, req.body.marque], (err) => {
         if (err) {
             return next(err);
         }
@@ -52,45 +67,26 @@ router.post('/create', (req, res, next) => {
     });
 });
 
-router.patch('/account/:prop', Verif.verifyToken, (req, res, next) => {
+router.patch('/:prop', Verif.verifyToken, (req, res, next) => {
+    DB.checkConnection();
     const prop = req.params.prop;
     if (req.body.id_utilisateur != req.userId || req.params.prop === "confirme") {
         router.use(Verif.isAdmin);
     }
-    if (prop === 'mail') {
-        DB.query('UPDATE utilisateurs SET mail = ? WHERE id = ?',[req.body.value, req.body.id_utilisateur], (err) => {
-            if (err) {
-                return next(err);
-            } else {
-                res.status(200).end();
-            }
-
-        })
-    } else {
-
-        const mdp = Bcrypt.hashSync(req.body.value, 8);
-        DB.query('UPDATE utilisateurs SET mdp = ? WHERE id = ?',[mdp, req.body.id_utilisateur], (err) => {
-            if (err) {
-                return next(err);
-            } else {
-                res.status(200).end();
-            }
-
-        })
+    if (prop === 'mdp') {
+        req.body.value = Bcrypt.hashSync(req.body.value, 8);
     }
-});
-
-router.delete('/account', Verif.isAdmin, (req, res, next) => {
-    DB.query('DELETE FROM utilisateurs WHERE id = ?', [req.body.id_utilisateur], (err) => {
+    DB.data.query('UPDATE utilisateurs SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
         res.status(200).end();
-    })
+    });
 });
 
-router.patch('/validate', Verif.isAdmin, (req, res, next) => {
-    DB.query('UPDATE utilisateurs SET confirme = 1 WHERE id = ?', [req.body.id], (err) => {
+router.delete('/account', Verif.isAdmin, (req, res, next) => {
+    DB.checkConnection();
+    DB.data.query('DELETE FROM utilisateurs WHERE id = ?', [req.body.id_utilisateur], (err) => {
         if (err) {
             return next(err);
         }
@@ -99,8 +95,9 @@ router.patch('/validate', Verif.isAdmin, (req, res, next) => {
 });
 
 router.post('/add/:nom/:category/:id', Verif.verifyToken, (req, res, next) => {
+    DB.checkConnection();
     const category = 'id_' + req.params.category;
-    DB.query('INSERT INTO collection_uti (id_utilisateur, ?, nom) VALUES (?, ?, ?)', [category, req.userId, req.params.id, req.params.nom], (err) => {
+    DB.data.query('INSERT INTO collection_uti (id_utilisateur, ?, nom) VALUES (?, ?, ?)', [category, req.userId, req.params.id, req.params.nom], (err) => {
         if (err) {
             return next(err);
         }

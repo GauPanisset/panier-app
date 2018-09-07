@@ -12,11 +12,11 @@ router.post('/create', Verif.isBrand, (req, res, next) => {
     if (req.body.id_marque !== req.brandId) {
         router.use(Verif.isAdmin);
     }
-    DB.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom], (err) => {
+    DB.data.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom], (err) => {
         if (err) {
             return next(err);
         }
-        DB.query('SELECT id FROM product WHERE nom = ? AND id_marque = ? AND couleur = ?', [req.body.nom, req.body.id_marque, req.body.couleur], (err, data) => {
+        DB.data.query('SELECT id FROM product WHERE nom = ? AND id_marque = ? AND couleur = ?', [req.body.nom, req.body.id_marque, req.body.couleur], (err, data) => {
             if (err) {
                 return next(err);
             }
@@ -29,7 +29,7 @@ router.patch('/:prop', Verif.isBrand, (req, res, next) => {
     if (req.body.id_marque !== req.brandId) {
         router.use(Verif.isAdmin);
     }
-    DB.query('UPDATE product SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
+    DB.data.query('UPDATE product SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -41,7 +41,7 @@ router.delete('/:id', Verif.isBrand, (req, res, next) => {
     if(req.body.id_marque !== req.brandId) {
         router.use(Verif.isAdmin);
     }
-    DB.query('DELETE FROM product WHERE id = ?', [req.params.id], (err) => {
+    DB.data.query('DELETE FROM product WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -51,7 +51,7 @@ router.delete('/:id', Verif.isBrand, (req, res, next) => {
 
 router.get('/index/:id', (req, res, next) => {
     if (req.params.id === 'allback') {
-        DB.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", [req.params.id], (err, data) => {
+        DB.data.query("SELECT product.id AS id, product.nom AS nom, product.prix AS prix, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque", [req.params.id], (err, data) => {
             if (err) {
                 return next(err);
             } else {
@@ -59,7 +59,7 @@ router.get('/index/:id', (req, res, next) => {
             }
         });
     } else {
-        DB.query("SELECT product.id AS id, product.nom AS nom, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
+        DB.data.query("SELECT product.id AS id, product.nom AS nom, product.categorie AS categorie, product.sous_categorie AS sous_categorie, product.couleur AS couleur, product.couleur_type AS couleur_type, product.matiere AS matiere, product.forme AS forme, marque.nom AS marque, product.collection AS collection, product.numero AS numero, product.description AS description FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
             if (err) {
                 return next(err);
             } else {
@@ -71,7 +71,7 @@ router.get('/index/:id', (req, res, next) => {
 
 
 router.get('/:id', (req, res, next) => {
-    DB.query("SELECT product.nom AS nom, product.matiere AS matiere, product.couleur AS couleur, product.prix AS prix, product.numero AS numero, product.description AS description, marque.nom AS marque FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
+    DB.data.query("SELECT product.nom AS nom, product.matiere AS matiere, product.couleur AS couleur, product.prix AS prix, product.numero AS numero, product.description AS description, marque.nom AS marque FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
         } else {
@@ -81,7 +81,7 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('/image/:id', (req, res, next) => {
-    DB.query("SELECT url FROM image WHERE id_produit = ?", [req.params.id], (err, data) => {
+    DB.data.query("SELECT url FROM image WHERE id_produit = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
         } else {
