@@ -8,9 +8,8 @@ router.options('*', (req, res, next) => {
     res.status(200).end();
 });
 
-router.post('/create', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
-    DB.data.query('INSERT INTO article (auteur, lien, date, texte, accueil, titre, type, sous_titre) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [req.body.auteur, req.body.lien, req.body.date, req.body.texte, req.body.accueil, req.body.titre, req.body.type, req.body.sous_titre], (err) => {
+router.post('/create', Verif.verifyToken('createArticle'), (req, res, next) => {
+    DB.data.query('INSERT INTO article (auteur, lien, date, texte, accueil, titre, type, sous_titre, droit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.auteur, req.body.lien, req.body.date, req.body.texte, req.body.accueil, req.body.titre, req.body.type, req.body.sous_titre, req.userId], (err) => {
         if (err) {
             return next(err);
         }
@@ -23,8 +22,7 @@ router.post('/create', Verif.isAdmin, (req, res, next) => {
     })
 });
 
-router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
+router.patch('/:prop', Verif.verifyToken('patchArticle'), (req, res, next) => {
     DB.data.query('UPDATE article SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
@@ -33,8 +31,7 @@ router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
     });
 });
 
-router.delete('/:id', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
+router.delete('/:id', Verif.verifyToken('deleteArticle'), (req, res, next) => {
     DB.data.query('DELETE FROM article WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
@@ -44,7 +41,6 @@ router.delete('/:id', Verif.isAdmin, (req, res, next) => {
 });
 
 router.get('/accueil/:type', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT article.id AS id, article.texte AS texte, image.url AS image, article.titre AS titre FROM article INNER JOIN image ON image.id_article = article.id WHERE image.main = 1 AND article.accueil = 1 AND article.type = ?", [req.params.type], (err, data) => {
         if (err) {
             return next(err);
@@ -55,7 +51,6 @@ router.get('/accueil/:type', (req, res, next) => {
 });
 
 router.get('/index/:id', (req, res, next) => {
-    DB.checkConnection();
     if (req.params.id === 'allback') {
         DB.data.query("SELECT id, auteur, lien, date, texte, accueil,titre, type, sous_titre FROM article", (err, data) => {
             if (err) {
@@ -76,7 +71,6 @@ router.get('/index/:id', (req, res, next) => {
 });
 
 router.get('/section/:type', (req, res, next) => {
-    DB.checkConnection();
     let sort_by = "ORDER BY ";
     if (req.query.order !== undefined) {
 
@@ -105,7 +99,6 @@ router.get('/section/:type', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT article.id AS id, date_format(article.date, '%Y-%m-%d') AS date, article.texte AS texte, article.titre AS titre, article.sous_titre AS sous_titre, GROUP_CONCAT(tag.label) AS tags FROM article LEFT JOIN lien_tag_article ON lien_tag_article.id_article = article.id LEFT JOIN tag ON tag.id = lien_tag_article.id_tag GROUP BY article.id HAVING article.id = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
@@ -116,7 +109,6 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('/image/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT url FROM image WHERE id_article = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
@@ -195,9 +187,6 @@ router.get('/request/:keywords', (req, res) => {
             }
         });
     }
-
-    console.log(body);
-    console.log(body.sort);
     Elastic.search('article', body)                                           //Promesse de recherche.
         .then(results => {
             if (request === 'all') {

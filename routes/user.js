@@ -12,7 +12,6 @@ router.options('*', (req, res, next) => {
 });
 
 Passport.use(new BasicStrategy((username,password,done)=>{
-    DB.checkConnection();
     DB.data.query('SELECT * FROM utilisateurs WHERE pseudo=?',[username],(err,user)=>{
         if(err){//bad request
             return done(err);
@@ -22,7 +21,7 @@ Passport.use(new BasicStrategy((username,password,done)=>{
         }
         user = user[0];
         if(Bcrypt.compareSync(password, user.mdp)){
-            let token = jwt.sign({ id: user.id, admin: user.admin, id_marque: user.id_marque}, Verif.secret, {
+            let token = jwt.sign({ id: user.id, admin: user.admin}, Verif.secret, {
                 expiresIn: 86400 //expires in 24 hours
             });
             const json = {
@@ -38,7 +37,6 @@ Passport.use(new BasicStrategy((username,password,done)=>{
 }));
 
 router.get('/index/:id', (req, res, next) => {
-    DB.checkConnection();
     if (req.params.id == 'allback') {
         DB.data.query('SELECT * FROM utilisateurs', [req.params.id], (err, data) => {
             if (err) {
@@ -57,26 +55,31 @@ router.get('/index/:id', (req, res, next) => {
 });
 
 router.post('/create', (req, res, next) => {
-    DB.checkConnection();
     req.body.mdp = Bcrypt.hashSync(req.body.mdp, 8);
     DB.data.query('INSERT INTO utilisateurs (pseudo, mail, mdp, id_marque) VALUES (?, ?, ?, ?)', [req.body.pseudo, req.body.mail, req.body.mdp, req.body.marque], (err) => {
         if (err) {
             return next(err);
         }
-        res.status(201).end();
+        DB.data.query('SELECT id FROM utilisateurs WHERE pseudo = ? AND mail = ?', [req.body.pseudo, req.body.mail], (err, data) => {
+            if(err) {
+                return next(err);
+            }
+            DB.data.query('INSERT INTO autorisation (id_droit, id_utilisateur, total) VALUES (13, ?, 0)', [data[0].id], (err) => {
+                if(err) {
+                    return next(err);
+                }
+                res.status(200).end();
+            });
+        });
     });
 });
 
-router.patch('/:prop', Verif.verifyToken, (req, res, next) => {
-    DB.checkConnection();
+router.patch('/:prop', Verif.verifyToken('patchUser'), (req, res, next) => {
     const prop = req.params.prop;
-    if (req.body.id_utilisateur != req.userId || req.params.prop === "confirme") {
-        router.use(Verif.isAdmin);
-    }
     if (prop === 'mdp') {
         req.body.value = Bcrypt.hashSync(req.body.value, 8);
     }
-    DB.data.query('UPDATE utilisateurs SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
+    DB.data.query('UPDATE utilisateurs SET ' + prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -84,9 +87,44 @@ router.patch('/:prop', Verif.verifyToken, (req, res, next) => {
     });
 });
 
-router.delete('/account', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
-    DB.data.query('DELETE FROM utilisateurs WHERE id = ?', [req.body.id_utilisateur], (err) => {
+router.get('/authorization/:id', (req, res, next) => {
+    DB.data.query('SELECT id_droit, total FROM autorisation WHERE id_utilisateur = ?', [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
+router.post('/authorization', Verif.verifyToken('patchAuthorization'), (req, res, next) => {
+    DB.data.query('INSERT INTO autorisation (id_droit, id_utilisateur, total) VALUES (?, ?, ?)', [req.body.right, req.body.id, req.body.scope], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.patch('/account/authorization', Verif.verifyToken('patchAuthorization'), (req, res, next) => {
+    DB.data.query('UPDATE autorisation SET total = ? WHERE id_utilisateur = ? AND id_droit = ?', [req.body.scope, req.body.id, req.body.right], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/authorization/:id/:right', Verif.verifyToken('patchAuthorization'), (req, res, next) => {
+    DB.data.query('DELETE FROM autorisation WHERE id_utilisateur = ? AND id_droit = ?', [req.params.id, req.params.right], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/:id', Verif.verifyToken('deleteUser'), (req, res, next) => {
+    DB.data.query('DELETE FROM utilisateurs WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
@@ -94,8 +132,7 @@ router.delete('/account', Verif.isAdmin, (req, res, next) => {
     })
 });
 
-router.post('/add/:nom/:category/:id', Verif.verifyToken, (req, res, next) => {
-    DB.checkConnection();
+router.post('/add/:nom/:category/:id', Verif.verifyToken(null), (req, res, next) => {
     const category = 'id_' + req.params.category;
     DB.data.query('INSERT INTO collection_uti (id_utilisateur, ?, nom) VALUES (?, ?, ?)', [category, req.userId, req.params.id, req.params.nom], (err) => {
         if (err) {

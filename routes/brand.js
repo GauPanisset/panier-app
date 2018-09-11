@@ -7,9 +7,8 @@ router.options('*', (req, res, next) => {
     res.status(200).end();
 });
 
-router.post('/create', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
-    DB.data.query('INSERT INTO marque (nom, site, description, accueil) VALUES (?, ?, ?, ?)', [req.body.nom, req.body.site, req.body.description, req.body.accueil], (err) => {
+router.post('/create', Verif.verifyToken('createBrand'), (req, res, next) => {
+    DB.data.query('INSERT INTO marque (nom, site, description, accueil, droit) VALUES (?, ?, ?, ?, ?)', [req.body.nom, req.body.site, req.body.description, req.body.accueil, req.userId], (err) => {
         if (err) {
             return next(err);
         }
@@ -22,11 +21,7 @@ router.post('/create', Verif.isAdmin, (req, res, next) => {
     })
 });
 
-router.patch('/:prop', Verif.isBrand, (req, res, next) => {
-    DB.checkConnection();
-    if (req.body.id_marque !== req.brandId) {
-        router.use(Verif.isAdmin);
-    }
+router.patch('/:prop', Verif.verifyToken('patchBrand'), (req, res, next) => {
     DB.data.query('UPDATE marque SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
@@ -35,11 +30,7 @@ router.patch('/:prop', Verif.isBrand, (req, res, next) => {
     });
 });
 
-router.delete('/:id', Verif.isBrand, (req, res, next) => {
-    DB.checkConnection();
-    if(req.body.id_marque !== req.brandId) {
-        router.use(Verif.isAdmin);
-    }
+router.delete('/:id', Verif.verifyToken('deleteBrand'), (req, res, next) => {
     DB.data.query('DELETE FROM marque WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
@@ -50,7 +41,6 @@ router.delete('/:id', Verif.isBrand, (req, res, next) => {
 });
 
 router.get('/index/:id', (req, res, next) => {
-    DB.checkConnection();
     let sort_by = "ORDER BY ";
     if (req.query.order !== undefined) {
         const all_sorts = {
@@ -92,7 +82,6 @@ router.get('/index/:id', (req, res, next) => {
 });
 
 router.get('/accueil', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT marque.id AS id, marque.description AS texte, image.url AS image, marque.nom AS titre FROM marque INNER JOIN image ON image.id_marque = marque.id WHERE image.main = 1 AND marque.accueil = 1", (err, data) => {
         if (err) {
             return next(err);
@@ -103,7 +92,6 @@ router.get('/accueil', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT nom, site, description FROM marque WHERE id = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
@@ -114,7 +102,6 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('/image/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT url FROM image WHERE id_marque = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
@@ -125,7 +112,6 @@ router.get('/image/:id', (req, res, next) => {
 });
 
 router.get('/id/:name', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT id FROM marque WHERE nom = ?", [req.params.name], (err, data) => {
        if (err) {
            return next(err);

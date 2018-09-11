@@ -8,11 +8,8 @@ router.options('*', (req, res, next) => {
     res.status(200).end();
 });
 
-router.post('/create', Verif.isBrand, (req, res, next) => {
-    if (req.body.id_marque !== req.brandId) {
-        router.use(Verif.isAdmin);
-    }
-    DB.data.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom], (err) => {
+router.post('/create', Verif.verifyToken('createProduct'), (req, res, next) => {
+    DB.data.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom, droit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.categorie, req.body.sous_categorie, req.body.couleur, req.body.couleur_type, req.body.matiere, req.body.forme, req.body.prix, req.body.id_marque, req.body.collection, req.body.numero, req.body.description, req.body.nom, req.userId], (err) => {
         if (err) {
             return next(err);
         }
@@ -25,10 +22,7 @@ router.post('/create', Verif.isBrand, (req, res, next) => {
     })
 });
 
-router.patch('/:prop', Verif.isBrand, (req, res, next) => {
-    if (req.body.id_marque !== req.brandId) {
-        router.use(Verif.isAdmin);
-    }
+router.patch('/:prop', Verif.verifyToken('patchProduct'), (req, res, next) => {
     DB.data.query('UPDATE product SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
@@ -37,10 +31,9 @@ router.patch('/:prop', Verif.isBrand, (req, res, next) => {
     });
 });
 
-router.delete('/:id', Verif.isBrand, (req, res, next) => {
-    if(req.body.id_marque !== req.brandId) {
-        router.use(Verif.isAdmin);
-    }
+
+
+router.delete('/:id', Verif.verifyToken('deleteProduct'), (req, res, next) => {
     DB.data.query('DELETE FROM product WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);

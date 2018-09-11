@@ -7,9 +7,8 @@ router.options('*', (req, res, next) => {
     res.status(200).end();
 });
 
-router.post('/create', (req, res, next) => {
-    DB.checkConnection();
-    DB.data.query('INSERT INTO boutique (pays, ville, rue, numero, complement, nom, site, description, accueil) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.pays, req.body.ville, req.body.rue, req.body.numero, req.body.complement, req.body.nom, req.body.site, req.body.description, req.body.accueil], (err) => {
+router.post('/create', (req, res, next) => {;
+    DB.data.query('INSERT INTO boutique (pays, ville, rue, numero, complement, nom, site, description, accueil, droit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [req.body.pays, req.body.ville, req.body.rue, req.body.numero, req.body.complement, req.body.nom, req.body.site, req.body.description, req.body.accueil, req.userId], (err) => {
         if (err) {
             return next(err);
         }
@@ -22,8 +21,7 @@ router.post('/create', (req, res, next) => {
     })
 });
 
-router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
+router.patch('/:prop', Verif.verifyToken('patchShop'), (req, res, next) => {
     DB.data.query('UPDATE boutique SET ' + req.params.prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
@@ -32,8 +30,7 @@ router.patch('/:prop', Verif.isAdmin, (req, res, next) => {
     });
 });
 
-router.delete('/:id', Verif.isAdmin, (req, res, next) => {
-    DB.checkConnection();
+router.delete('/:id', Verif.verifyToken('patchShop'), (req, res, next) => {
     DB.data.query('DELETE FROM boutique WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
@@ -43,8 +40,6 @@ router.delete('/:id', Verif.isAdmin, (req, res, next) => {
 });
 
 router.get('/index/:id', (req, res, next) => {
-    DB.checkConnection();
-
     let sort_by = "ORDER BY ";
     if (req.query.order !== undefined) {
         const all_sorts = {
@@ -86,7 +81,6 @@ router.get('/index/:id', (req, res, next) => {
 });
 
 router.get('/accueil', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT boutique.id AS id, boutique.description AS texte, image.url AS image, boutique.nom AS titre FROM boutique INNER JOIN image ON image.id_boutique = boutique.id WHERE image.main = 1 AND boutique.accueil = 1", (err, data) => {
         if (err) {
             return next(err);
@@ -97,7 +91,6 @@ router.get('/accueil', (req, res, next) => {
 });
 
 router.get('/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT nom, site, description, pays, ville, rue, numero, complement FROM boutique WHERE id = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
@@ -108,7 +101,6 @@ router.get('/:id', (req, res, next) => {
 });
 
 router.get('/image/:id', (req, res, next) => {
-    DB.checkConnection();
     DB.data.query("SELECT url FROM image WHERE id_boutique = ?", [req.params.id], (err, data) => {
         if (err) {
             return next(err);
