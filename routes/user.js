@@ -123,18 +123,44 @@ router.delete('/authorization/:id/:right', Verif.verifyToken('patchAuthorization
     });
 });
 
-router.delete('/:id', Verif.verifyToken('deleteUser'), (req, res, next) => {
-    DB.data.query('DELETE FROM utilisateurs WHERE id = ?', [req.params.id], (err) => {
+router.get('/collection/:id', (req, res, next) => {         //For product valeur1 = nom, valeur2 = prix & for article valeur1 = titre, valeur2 = sous_titre, valeur3 = texte
+    DB.data.query("SELECT collection_uti.nom AS nom, IF(collection_uti.id_produit IS NULL, collection_uti.id_article, collection_uti.id_produit) AS id, IF(collection_uti.id_produit IS NULL, image2.url, image.url) AS image, IF(collection_uti.id_produit IS NULL, article.titre, product.nom) AS valeur1, IF(collection_uti.id_produit IS NULL, article.sous_titre, product.prix) AS valeur2, IF(collection_uti.id_produit IS NULL, article.texte, 'product') AS valeur3 FROM collection_uti LEFT JOIN product ON product.id = collection_uti.id_produit LEFT JOIN article ON article.id = collection_uti.id_article LEFT JOIN (SELECT url, id_produit FROM image WHERE main = 1) image ON image.id_produit = collection_uti.id_produit LEFT JOIN (SELECT url, id_article FROM image WHERE main = 1) image2 ON image2.id_article = collection_uti.id_article WHERE id_utilisateur = ?", [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    });
+});
+
+router.post('/collection', Verif.verifyToken(null), (req, res, next) => {
+    DB.data.query('INSERT INTO collection_uti ('+ req.body.item + ', id_utilisateur, nom) VALUES (?, ?, ?)', [req.body.id_item, req.body.id, req.body.nom], (err) => {
         if (err) {
             return next(err);
         }
         res.status(200).end();
-    })
+    });
 });
 
-router.post('/add/:nom/:category/:id', Verif.verifyToken(null), (req, res, next) => {
-    const category = 'id_' + req.params.category;
-    DB.data.query('INSERT INTO collection_uti (id_utilisateur, ?, nom) VALUES (?, ?, ?)', [category, req.userId, req.params.id, req.params.nom], (err) => {
+router.delete('/collection/:id/:nom', Verif.verifyToken(null), (req, res, next) => {
+    DB.data.query('DELETE FROM collection_uti WHERE id_utilisateur = ? AND nom = ?', [req.params.id, req.params.nom], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/collection/:id/:nom', Verif.verifyToken(null), (req, res, next) => {
+    DB.data.query('DELETE FROM collection_uti WHERE id_utilisateur = ? AND nom = ? AND id_' + req.query.item + ' = ?', [req.params.id, req.params.nom, req.query.id_item], (err) => {
+        if (err) {
+            return next(err);
+        }
+        res.status(200).end();
+    });
+});
+
+router.delete('/:id', Verif.verifyToken('deleteUser'), (req, res, next) => {
+    DB.data.query('DELETE FROM utilisateurs WHERE id = ?', [req.params.id], (err) => {
         if (err) {
             return next(err);
         }
