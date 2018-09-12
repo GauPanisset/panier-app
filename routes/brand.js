@@ -55,7 +55,7 @@ router.get('/index/:id', (req, res, next) => {
     }
 
     if (req.params.id === 'all') {
-        DB.data.query("SELECT marque.id AS id, image.url AS image, marque.nom AS name FROM marque INNER JOIN image ON image.id_marque = marque.id " + sort_by, [req.params.id], (err, data) => {
+        DB.data.query("SELECT marque.id AS id, image.url AS image, marque.nom AS name FROM marque LEFT JOIN image ON image.id_marque = marque.id " + sort_by, [req.params.id], (err, data) => {
             if (err) {
                 return next(err);
             } else {
