@@ -135,6 +135,7 @@ router.get('/collection/:id', (req, res, next) => {         //For product valeur
 router.post('/collection', Verif.verifyToken(null), (req, res, next) => {
     DB.data.query('INSERT INTO collection_uti ('+ req.body.item + ', id_utilisateur, nom) VALUES (?, ?, ?)', [req.body.id_item, req.body.id, req.body.nom], (err) => {
         if (err) {
+
             return next(err);
         }
         res.status(200).end();
