@@ -62,6 +62,14 @@ router.get('/index/:id', (req, res, next) => {
     }
 });
 
+router.get('/accueil/random', (req, res, next) => {
+    DB.data.query("SELECT product2.categorie AS categorie, image.url AS image FROM (SELECT id, categorie FROM product ORDER BY RAND()) product2 LEFT JOIN image ON image.id_produit = product2.id GROUP BY categorie", (err, data) => {
+        if (err) {
+            return next(err);
+        }
+        return res.json(data);
+    }) ;
+});
 
 router.get('/:id', (req, res, next) => {
     DB.data.query("SELECT product.nom AS nom, product.matiere AS matiere, product.couleur AS couleur, product.prix AS prix, product.numero AS numero, product.description AS description, marque.nom AS marque FROM product INNER JOIN marque ON marque.id = product.id_marque WHERE product.id = ?", [req.params.id], (err, data) => {
@@ -78,6 +86,17 @@ router.get('/image/:id', (req, res, next) => {
         if (err) {
             return next(err);
         } else {
+            return res.json(data);
+        }
+    });
+});
+
+router.get('/collection/:id', (req, res, next) => {
+    DB.data.query("SELECT product.collection AS collection, product.id AS id, product.nom AS nom, image.url AS image, product.prix AS prix FROM product LEFT JOIN image ON image.id_produit = product.id WHERE product.id_marque = ? AND product.collection IS NOT NULL", [req.params.id], (err, data) => {
+        if (err) {
+            return next(err);
+        } else {
+            console.log(data);
             return res.json(data);
         }
     });
