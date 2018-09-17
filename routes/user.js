@@ -35,7 +35,7 @@ Passport.use(new BasicStrategy((username,password,done) => {
             console.log("Almost there !");
             return done(null,json);
         }
-        console.log("Wrong password");
+        console.log(password);
         return done(null,false,{message: "wrong password"});
     });
 
