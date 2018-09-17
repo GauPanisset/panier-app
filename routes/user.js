@@ -79,7 +79,7 @@ router.patch('/:prop', Verif.verifyToken('patchUser'), (req, res, next) => {
     if (prop === 'mdp') {
         req.body.value = Bcrypt.hashSync(req.body.value, 8);
     }
-    console.log('UPDATE utilisateurs SET ' + prop + ' = ? WHERE id = ?');
+    console.log('UPDATE utilisateurs SET ' + prop + ' = ' + req.body.value + ' WHERE id = ' + req.body.id);
     DB.data.query('UPDATE utilisateurs SET ' + prop + ' = ? WHERE id = ?', [req.body.value, req.body.id], (err) => {
         if (err) {
             return next(err);
