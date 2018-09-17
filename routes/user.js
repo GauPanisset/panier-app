@@ -189,7 +189,6 @@ router.delete('/:id', Verif.verifyToken('deleteUser'), (req, res, next) => {
 });
 
 router.get('/login', Passport.authenticate('basic',{session:false}), (req, res) => {
-    console.log("Passport seems ok");
     const json = JSON.stringify(req.user);
     res.end(json);
 });
