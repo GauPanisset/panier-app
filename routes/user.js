@@ -12,17 +12,16 @@ router.options('*', (req, res, next) => {
 });
 
 Passport.use(new BasicStrategy((username,password,done) => {
-    console.log("Start");
     DB.data.query('SELECT * FROM utilisateurs WHERE pseudo=?',[username],(err,user)=>{
         if(err){//bad request
-            console.log("bad request");
             return done(err);
         }
         if(!user){//username not found
-            console.log("No user");
             return done(null,false,{message: "wrong username"});
         }
         user = user[0];
+        console.log(user);
+        console.log(Bcrypt.compareSync(password, user.mdp));
         if(Bcrypt.compareSync(password, user.mdp)){
             let token = jwt.sign({ id: user.id, admin: user.admin}, Verif.secret, {
                 expiresIn: 86400 //expires in 24 hours
@@ -32,10 +31,8 @@ Passport.use(new BasicStrategy((username,password,done) => {
                 auth: true,
                 id: user.id,
             };
-            console.log("Almost there !");
             return done(null,json);
         }
-        console.log(password);
         return done(null,false,{message: "wrong password"});
     });
 
