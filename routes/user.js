@@ -20,8 +20,6 @@ Passport.use(new BasicStrategy((username,password,done) => {
             return done(null,false,{message: "wrong username"});
         }
         user = user[0];
-        console.log(user);
-        console.log(Bcrypt.compareSync(password, user.mdp));
         if(Bcrypt.compareSync(password, user.mdp)){
             let token = jwt.sign({ id: user.id, admin: user.admin}, Verif.secret, {
                 expiresIn: 86400 //expires in 24 hours
