@@ -11,12 +11,15 @@ router.options('*', (req, res, next) => {
     res.status(200).end();
 });
 
-Passport.use(new BasicStrategy((username,password,done)=>{
+Passport.use(new BasicStrategy((username,password,done) => {
+    console.log("Start");
     DB.data.query('SELECT * FROM utilisateurs WHERE pseudo=?',[username],(err,user)=>{
         if(err){//bad request
+            console.log("bad request");
             return done(err);
         }
         if(!user){//username not found
+            console.log("No user");
             return done(null,false,{message: "wrong username"});
         }
         user = user[0];
@@ -29,6 +32,7 @@ Passport.use(new BasicStrategy((username,password,done)=>{
                 auth: true,
                 id: user.id,
             };
+            console.log("Almost there !");
             return done(null,json);
         }
         return done(null,false,{message: "wrong password"});
@@ -188,6 +192,7 @@ router.delete('/:id', Verif.verifyToken('deleteUser'), (req, res, next) => {
 });
 
 router.get('/login', Passport.authenticate('basic',{session:false}), (req, res) => {
+    console.log("Passport seems ok");
     const json = JSON.stringify(req.user);
     res.end(json);
 });
