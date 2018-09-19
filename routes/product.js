@@ -24,10 +24,11 @@ router.post('/create', Verif.verifyToken('createProduct'), (req, res, next) => {
 
 router.post('/jsoncreate', Verif.verifyToken('createProduct'), (req, res, next) => {
     req.body.content.forEach(item => {
-        DB.data.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom, droit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [item.categorie, item.sous_categorie, item.couleur, item.couleur_type, item.matiere, item.forme, item.prix, item.id_marque, item.collection, item.numero, item.description, item.nom, req.userId], (err) => {
+        DB.data.query('INSERT INTO product (categorie, sous_categorie, couleur, couleur_type, matiere, forme, prix, id_marque, collection, numero, description, nom, droit) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [item.categorie, item.sous_categorie, item.couleur, item.couleur_type, item.matiere, item.forme, item.prix, item.marque, item.collection, item.numero, item.description, item.nom, req.userId], (err) => {
             if (err) {
                 return next(err);
             }
+            console.log("add");
             res.status(200).end();
         })
     })
