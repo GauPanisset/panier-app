@@ -75,7 +75,7 @@ router.get('/index/:id', (req, res, next) => {
 });
 
 router.get('/accueil/random', (req, res, next) => {
-    DB.data.query("SELECT product2.categorie AS categorie, image.url AS image FROM (SELECT id, categorie FROM product ORDER BY RAND()) product2 LEFT JOIN image ON image.id_produit = product2.id GROUP BY categorie", (err, data) => {
+    DB.data.query("SELECT product2.categorie AS categorie, image.url AS image FROM (SELECT id, categorie FROM product ORDER BY RAND()) product2 RIGHT JOIN image ON image.id_produit = product2.id GROUP BY categorie", (err, data) => {
         if (err) {
             return next(err);
         }
